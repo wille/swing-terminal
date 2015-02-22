@@ -293,8 +293,12 @@ public class JTerminal extends JComponent {
 			sb.append(chars[pos]);
 		}
 		
-		cursory++;
-		cursorx = 0;
+		if (cursory + 1 >= rows) {
+			expand();
+		} else {
+			cursory++;
+			cursorx = 0;
+		}
 		blinkThread.interrupt();
 	}
 	
