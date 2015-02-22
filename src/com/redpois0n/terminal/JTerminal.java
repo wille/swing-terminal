@@ -277,7 +277,7 @@ public class JTerminal extends JComponent {
 	}
 	
 	public void append(char c) {
-		if (c == File.separatorChar) {
+		if (Character.toString(c).equals(System.getProperty("line.separator")) || c == '\n') {
 			enter();
 			return;
 		}
