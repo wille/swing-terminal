@@ -26,6 +26,8 @@ public class DebugTerminal {
 			@Override
 			public void processCommand(JTerminal terminal, String command) {
 				System.out.println(command);
+				terminal.append("root@master:~# ");
+				terminal.setBlockAtCurrentPos();
 			}
 		});
 

@@ -103,6 +103,10 @@ public class JTerminal extends JComponent {
 				}
 				
 				Color background = backgrounds[i];
+				
+				if (i == block) {
+					background = Color.red;
+				}
 
 				int rx = getRealX(y);
 				int ry = getRealY(x);	
@@ -301,13 +305,21 @@ public class JTerminal extends JComponent {
 	}
 	
 	public void enter() {
+		int latestBlock = block;
 		block = cursorx + cursory * columns;
 		
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < columns; i++) {
-			int pos =  i + cursory * columns;
-
-			sb.append(chars[pos]);
+		
+		for (int x = 0; x < rows; x++) {
+			for (int y = 0; y < columns; y++) {
+				int i = y + x * columns;
+				
+				if (i < latestBlock) {
+					continue;
+				}
+				
+				sb.append(chars[i]);
+			}
 		}
 		
 		if (cursory + 1 >= rows) {
@@ -374,6 +386,9 @@ public class JTerminal extends JComponent {
 		sizeChangeListeners.remove(listener);
 	}
 	
+	public void setBlockAtCurrentPos() {
+		this.block = cursorx + cursory * columns;
+	}
 
 	public boolean scrollToBottom() {
 		boolean b = shouldScroll;
