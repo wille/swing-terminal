@@ -41,6 +41,8 @@ public class JTerminal extends JComponent {
 	
 	private int cursorx;
 	private int cursory;
+	
+	private boolean shouldScroll;
 		
 	public JTerminal() {
 		this.blinkThread = new Thread(new BlinkRunnable());
@@ -287,6 +289,7 @@ public class JTerminal extends JComponent {
 		chars[i] = c;
 		
 		blinkThread.interrupt();
+		shouldScroll = true;
 	}
 	
 	public void append(String s) {
@@ -310,6 +313,7 @@ public class JTerminal extends JComponent {
 			cursorx = 0;
 		}
 		blinkThread.interrupt();
+		shouldScroll = true;
 	}
 	
 	public class KeyEventListener implements KeyListener {
@@ -328,7 +332,7 @@ public class JTerminal extends JComponent {
 				delete();
 			} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 				enter();
-			} else if (Character.isAlphabetic(e.getKeyChar()) || Character.isDigit(e.getKeyChar())){
+			} else if (Character.isAlphabetic(e.getKeyChar()) || Character.isDigit(e.getKeyChar())) {
 				append(e.getKeyChar());
 			}
 		}
@@ -361,12 +365,26 @@ public class JTerminal extends JComponent {
 		sizeChangeListeners.remove(listener);
 	}
 	
+
+	public boolean scrollToBottom() {
+		boolean b = shouldScroll;
+		
+		if (b) {
+			shouldScroll = !shouldScroll;
+		}
+		return b;
+	}
+	
 	public class BlinkRunnable implements Runnable {
 		@Override
 		public void run() {
-			while (blinkcursor) {
-				blinking = !blinking;
+			while (true) {
 				JTerminal.this.repaint();
+
+				if (blinkcursor) {
+					blinking = !blinking;			
+				}
+				
 				try {
 					Thread.sleep(600L);
 				} catch (InterruptedException e) {
@@ -376,6 +394,5 @@ public class JTerminal extends JComponent {
 			
 		}		
 	}
-	
 
 }
