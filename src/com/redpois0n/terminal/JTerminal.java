@@ -50,7 +50,7 @@ public class JTerminal extends JComponent {
 		Arrays.fill(foregrounds, DEFAULT_FOREGROUND);
 		Arrays.fill(fonts, DEFAULT_FONT);
 		Arrays.fill(chars, ' ');
-
+		
 		this.charwidth = 8;
 		this.charheight = 15;
 		
@@ -70,7 +70,7 @@ public class JTerminal extends JComponent {
 
 		for (int x = 0; x < rows; x++) {
 			for (int y = 0; y < columns; y++) {
-				int i = y + x * y;
+				int i = y + x * columns;
 						
 				Color background = backgrounds[i];
 				Color foreground = foregrounds[i];
@@ -151,12 +151,34 @@ public class JTerminal extends JComponent {
 		blinkThread.interrupt();
 	}
 	
-	public void delete() {
-		int i =  cursory + (cursorx - 1) * cursory;
+	public void delete() {				
+		if (cursorx == 0) {
+			cursorx = columns;
+			cursory--;
+		} else {
+			moveLeft();
+		}
 		
+		int i = cursorx + cursory * columns;
 		
+		chars[i] = ' ';
+		foregrounds[i] = DEFAULT_FOREGROUND;
+		backgrounds[i] = DEFAULT_BACKGROUND;
+		fonts[i] = DEFAULT_FONT;
 		
 		blinkThread.interrupt();
+	}
+	
+	public void append(char c) {
+		int i =  cursorx + cursory * columns;
+		chars[i] = c;
+				
+		if (cursorx + 1 == columns) {
+			cursory++;
+			cursorx = 0;
+		} else {
+			moveRight();
+		}
 	}
 	
 	public class KeyEventListener implements KeyListener {
@@ -173,6 +195,8 @@ public class JTerminal extends JComponent {
 				moveRight();
 			} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 				delete();
+			} else {
+				append(e.getKeyChar());
 			}
 		}
 
