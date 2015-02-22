@@ -20,7 +20,8 @@ public class JTerminal extends JComponent {
 	public static final Color DEFAULT_FOREGROUND = Color.white;
 	public static final Color DEFAULT_BACKGROUND = Color.black;
 	
-	private List<InputListener> listeners = new ArrayList<InputListener>();
+	private List<InputListener> inputListeners = new ArrayList<InputListener>();
+	private List<SizeChangeListener> sizeChangeListeners = new ArrayList<SizeChangeListener>();
 	
 	private Font[] fonts;
 	private Color[] foregrounds;
@@ -60,6 +61,8 @@ public class JTerminal extends JComponent {
 		this.charwidth = 8;
 		this.charheight = 15;
 		
+		this.cursory = this.rows - 1;
+		
 		toggleBlink();
 		
 		super.addKeyListener(new KeyEventListener());
@@ -72,7 +75,14 @@ public class JTerminal extends JComponent {
 	}
 	
 	public void setSize() {
-		super.setPreferredSize(new Dimension(getRealX(columns), getRealY(rows)));
+		int width = getRealX(columns);
+		int height = getRealY(rows);
+		
+		super.setPreferredSize(new Dimension(width, height));
+		
+		for (SizeChangeListener l : sizeChangeListeners) {
+			l.sizeChange(width, height);
+		}
 	}
 
 	@Override
@@ -155,7 +165,7 @@ public class JTerminal extends JComponent {
 		cursorx = 0;
 		cursory++;
 		
-		setSize();
+		setSize();			
 	}
 	
 	public int getTotal() {
@@ -214,7 +224,7 @@ public class JTerminal extends JComponent {
 	
 	public void delete() {				
 		if (cursorx == 0 && cursory > 0) {
-			cursorx = columns;
+			cursorx = columns - 1;
 			cursory--;
 		} else if (cursorx == 0 && cursory == 0) {
 			return;
@@ -335,12 +345,20 @@ public class JTerminal extends JComponent {
 		
 	}
 	
-	public void addListener(InputListener listener) {
-		listeners.add(listener);
+	public void addInputListener(InputListener listener) {
+		inputListeners.add(listener);
 	}
 	
-	public void removeListener(InputListener listener) {
-		listeners.remove(listener);
+	public void removeInputListener(InputListener listener) {
+		inputListeners.remove(listener);
+	}
+	
+	public void addSizeChangeListener(SizeChangeListener listener) {
+		sizeChangeListeners.add(listener);
+	}
+	
+	public void removeSizeChangeListener(SizeChangeListener listener) {
+		sizeChangeListeners.remove(listener);
 	}
 	
 	public class BlinkRunnable implements Runnable {
