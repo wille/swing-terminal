@@ -12,6 +12,10 @@ import javax.swing.JComponent;
 @SuppressWarnings("serial")
 public class JTerminal extends JComponent {
 	
+	public static final Font DEFAULT_FONT = new Font("Lucida Console", Font.PLAIN, 14);
+	public static final Color DEFAULT_FOREGROUND = Color.white;
+	public static final Color DEFAULT_BACKGROUND = Color.black;
+	
 	private Font[] fonts;
 	private Color[] foregrounds;
 	private Color[] backgrounds;
@@ -42,11 +46,10 @@ public class JTerminal extends JComponent {
 		this.backgrounds = new Color[getTotal()];
 		this.chars = new char[getTotal()];
 		
-		Arrays.fill(backgrounds, Color.black);
-		Arrays.fill(foregrounds, Color.white);
-		Font f = new Font("Lucida Console", Font.PLAIN, 14);
-		Arrays.fill(fonts, f);
-		Arrays.fill(chars, 'a');
+		Arrays.fill(backgrounds, DEFAULT_BACKGROUND);
+		Arrays.fill(foregrounds, DEFAULT_FOREGROUND);
+		Arrays.fill(fonts, DEFAULT_FONT);
+		Arrays.fill(chars, ' ');
 
 		this.charwidth = 8;
 		this.charheight = 15;
@@ -62,7 +65,7 @@ public class JTerminal extends JComponent {
 
 	@Override
 	public void paintComponent(Graphics g) {
-		g.setColor(Color.black);
+		g.setColor(DEFAULT_BACKGROUND);
 		g.fillRect(0, 0, getRealX(columns), getRealY(rows));
 
 		for (int x = 0; x < rows; x++) {
@@ -117,7 +120,7 @@ public class JTerminal extends JComponent {
 	}
 	
 	public void moveUp() {
-		if (cursory - 1 > 0) {
+		if (cursory > 0) {
 			cursory--;
 		}
 		
@@ -133,7 +136,7 @@ public class JTerminal extends JComponent {
 	}
 	
 	public void moveLeft() {
-		if (cursorx - 1 > 0) {
+		if (cursorx - 1 >= 0) {
 			cursorx--;
 		}
 		
@@ -144,6 +147,14 @@ public class JTerminal extends JComponent {
 		if (cursorx + 1 < columns) {
 			cursorx++;
 		}
+		
+		blinkThread.interrupt();
+	}
+	
+	public void delete() {
+		int i =  cursory + (cursorx - 1) * cursory;
+		
+		
 		
 		blinkThread.interrupt();
 	}
@@ -160,6 +171,8 @@ public class JTerminal extends JComponent {
 				moveLeft();
 			} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 				moveRight();
+			} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+				delete();
 			}
 		}
 
