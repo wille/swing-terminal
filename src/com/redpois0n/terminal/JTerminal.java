@@ -71,17 +71,27 @@ public class JTerminal extends JComponent {
 		for (int x = 0; x < rows; x++) {
 			for (int y = 0; y < columns; y++) {
 				int i = y + x * columns;
-						
+				
 				Color background = backgrounds[i];
+
+				int rx = getRealX(y);
+				int ry = getRealY(x);	
+				
+				g.setColor(background);
+				g.fillRect(rx, ry, charwidth, charheight);
+			}
+		}
+		
+		for (int x = 0; x < rows; x++) {
+			for (int y = 0; y < columns; y++) {
+				int i = y + x * columns;
+						
 				Color foreground = foregrounds[i];
 				char c = chars[i];
 				Font font = fonts[i];
 				
 				int rx = getRealX(y);
-				int ry = getRealY(x);
-				
-				g.setColor(background);
-				g.fillRect(rx, ry, charwidth, charheight);
+				int ry = getRealY(x);	
 				
 				g.setColor(foreground);
 				g.setFont(font);
