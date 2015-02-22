@@ -220,7 +220,9 @@ public class JTerminal extends JComponent {
 		int i =  cursorx + cursory * columns;
 		chars[i] = c;
 				
-		if (cursorx + 1 == columns) {
+		if (cursorx + 1 >= columns && cursory + 1 >= rows) {
+			expand();
+		} else if (cursorx + 1 >= columns) {
 			cursory++;
 			cursorx = 0;
 		} else {
