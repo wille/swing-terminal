@@ -17,6 +17,8 @@ public class JTerminal extends JComponent {
 	private Color[] backgrounds;
 	private char[] chars;
 	
+	private Thread blinkThread;
+	
 	private int columns;
 	private int rows;
 	
@@ -30,6 +32,8 @@ public class JTerminal extends JComponent {
 	private int cursory;
 		
 	public JTerminal() {
+		this.blinkThread = new Thread(new BlinkRunnable());
+		
 		this.columns = 80;
 		this.rows = 24;
 		
@@ -106,7 +110,9 @@ public class JTerminal extends JComponent {
 		blinkcursor = !blinkcursor;
 		
 		if (blinkcursor) {
-			new Thread(new BlinkRunnable()).start();
+			blinkThread.start();
+		} else {
+			blinkThread.interrupt();
 		}
 	}
 	
@@ -114,31 +120,38 @@ public class JTerminal extends JComponent {
 		if (cursory - 1 > 0) {
 			cursory--;
 		}
+		
+		blinkThread.interrupt();
 	}
 	
 	public void moveDown() {	
 		if (cursory + 1 < rows) {
 			cursory++;
 		}
+		
+		blinkThread.interrupt();
 	}
 	
 	public void moveLeft() {
 		if (cursorx - 1 > 0) {
 			cursorx--;
 		}
+		
+		blinkThread.interrupt();
 	}
 	
 	public void moveRight() {
 		if (cursorx + 1 < columns) {
 			cursorx++;
 		}
+		
+		blinkThread.interrupt();
 	}
 	
 	public class KeyEventListener implements KeyListener {
 
 		@Override
 		public void keyPressed(KeyEvent e) {
-			System.out.println(e.getKeyChar());
 			if (e.getKeyCode() == KeyEvent.VK_UP) {
 				moveUp();
 			} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
@@ -165,15 +178,16 @@ public class JTerminal extends JComponent {
 	public class BlinkRunnable implements Runnable {
 		@Override
 		public void run() {
-			try {
-				while (blinkcursor) {
-					blinking = !blinking;
-					JTerminal.this.repaint();
+			while (blinkcursor) {
+				blinking = !blinking;
+				JTerminal.this.repaint();
+				try {
 					Thread.sleep(600L);
+				} catch (InterruptedException e) {
+					
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
 			}
+			
 		}		
 	}
 	
