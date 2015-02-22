@@ -43,6 +43,8 @@ public class JTerminal extends JComponent {
 	private int cursory;
 	
 	private boolean shouldScroll;
+	
+	private int block;
 		
 	public JTerminal() {
 		this.repaintThread = new Thread(new RepaintRunnable());
@@ -193,7 +195,7 @@ public class JTerminal extends JComponent {
 	}
 	
 	public void moveUp() {
-		if (cursory > 0) {
+		if (cursory > 0 && cursorx + (cursory - 1) * columns >= block) {
 			cursory--;
 		}
 		
@@ -209,7 +211,7 @@ public class JTerminal extends JComponent {
 	}
 	
 	public void moveLeft() {
-		if (cursorx - 1 >= 0) {
+		if (cursorx - 1 >= 0 && cursorx - 1 + cursory * columns >= block) {
 			cursorx--;
 		}
 		
@@ -299,6 +301,8 @@ public class JTerminal extends JComponent {
 	}
 	
 	public void enter() {
+		block = cursorx + cursory * columns;
+		
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < columns; i++) {
 			int pos =  i + cursory * columns;
@@ -312,6 +316,7 @@ public class JTerminal extends JComponent {
 			cursory++;
 			cursorx = 0;
 		}
+		
 		repaintThread.interrupt();
 		shouldScroll = true;
 		
