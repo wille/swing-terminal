@@ -31,7 +31,7 @@ public class DebugTerminal {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addKeyListener(console.getKeyListener());
 		frame.add(scrollPane);
-		frame.setSize(650, 300);
+		frame.setSize(675, 300);
 		frame.setVisible(true);
 	}
 
