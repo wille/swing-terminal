@@ -31,7 +31,7 @@ public class DebugTerminal {
 
 		console.addSizeChangeListener(new SizeChangeListener() {
 			@Override
-			public void sizeChange(int width, int height) {
+			public void sizeChange(JTerminal terminal, int width, int height) {
 				JScrollBar vertical = scrollPane.getVerticalScrollBar();
 				scrollPane.revalidate();
 				vertical.revalidate();

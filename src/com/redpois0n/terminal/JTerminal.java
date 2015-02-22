@@ -83,7 +83,7 @@ public class JTerminal extends JComponent {
 		super.setPreferredSize(new Dimension(width, height));
 		
 		for (SizeChangeListener l : sizeChangeListeners) {
-			l.sizeChange(width, height);
+			l.sizeChange(this, width, height);
 		}
 	}
 
@@ -314,6 +314,10 @@ public class JTerminal extends JComponent {
 		}
 		repaintThread.interrupt();
 		shouldScroll = true;
+		
+		for (InputListener l : inputListeners) {
+			l.processCommand(this, sb.toString());
+		}
 	}
 	
 	public class KeyEventListener implements KeyListener {
