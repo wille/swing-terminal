@@ -8,6 +8,7 @@ public class DebugConsole {
 		JConsole console = new JConsole();
 		
 		JFrame frame = new JFrame();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(console);
 		frame.setSize(650, 400);
 		frame.setVisible(true);

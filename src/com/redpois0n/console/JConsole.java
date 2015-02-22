@@ -28,7 +28,7 @@ public class JConsole extends JComponent {
 		
 	public JConsole() {
 		this.columns = 80;
-		this.rows = 30;
+		this.rows = 24;
 		
 		this.fonts = new Font[getTotal()];
 		this.foreground = new Color[getTotal()];
@@ -36,7 +36,7 @@ public class JConsole extends JComponent {
 		this.chars = new char[getTotal()];
 
 		this.charwidth = 8;
-		this.charheight = 12;
+		this.charheight = 15;
 		
 		toggleBlink();
 	}
@@ -79,7 +79,7 @@ public class JConsole extends JComponent {
 				while (blinkcursor) {
 					blinking = !blinking;
 					JConsole.this.repaint();
-					Thread.sleep(300L);
+					Thread.sleep(600L);
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
