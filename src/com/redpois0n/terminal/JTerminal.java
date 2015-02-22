@@ -28,7 +28,7 @@ public class JTerminal extends JComponent {
 	private Color[] backgrounds;
 	private char[] chars;
 	
-	private Thread blinkThread;
+	private Thread repaintThread;
 	
 	private int columns;
 	private int rows;
@@ -45,7 +45,7 @@ public class JTerminal extends JComponent {
 	private boolean shouldScroll;
 		
 	public JTerminal() {
-		this.blinkThread = new Thread(new BlinkRunnable());
+		this.repaintThread = new Thread(new RepaintRunnable());
 		
 		this.columns = 80;
 		this.rows = 24;
@@ -186,9 +186,9 @@ public class JTerminal extends JComponent {
 		blinkcursor = !blinkcursor;
 		
 		if (blinkcursor) {
-			blinkThread.start();
+			repaintThread.start();
 		} else {
-			blinkThread.interrupt();
+			repaintThread.interrupt();
 		}
 	}
 	
@@ -197,7 +197,7 @@ public class JTerminal extends JComponent {
 			cursory--;
 		}
 		
-		blinkThread.interrupt();
+		repaintThread.interrupt();
 	}
 	
 	public void moveDown() {	
@@ -205,7 +205,7 @@ public class JTerminal extends JComponent {
 			cursory++;
 		}
 		
-		blinkThread.interrupt();
+		repaintThread.interrupt();
 	}
 	
 	public void moveLeft() {
@@ -213,7 +213,7 @@ public class JTerminal extends JComponent {
 			cursorx--;
 		}
 		
-		blinkThread.interrupt();
+		repaintThread.interrupt();
 	}
 	
 	public void moveRight() {
@@ -221,7 +221,7 @@ public class JTerminal extends JComponent {
 			cursorx++;
 		}
 		
-		blinkThread.interrupt();
+		repaintThread.interrupt();
 	}
 	
 	public void delete() {				
@@ -267,7 +267,7 @@ public class JTerminal extends JComponent {
 		backgrounds = tbackgrounds;
 		chars = tchars;
 		
-		blinkThread.interrupt();
+		repaintThread.interrupt();
 	}
 	
 	public void append(char c) {
@@ -288,7 +288,7 @@ public class JTerminal extends JComponent {
 		
 		chars[i] = c;
 		
-		blinkThread.interrupt();
+		repaintThread.interrupt();
 		shouldScroll = true;
 	}
 	
@@ -312,7 +312,7 @@ public class JTerminal extends JComponent {
 			cursory++;
 			cursorx = 0;
 		}
-		blinkThread.interrupt();
+		repaintThread.interrupt();
 		shouldScroll = true;
 	}
 	
@@ -375,7 +375,7 @@ public class JTerminal extends JComponent {
 		return b;
 	}
 	
-	public class BlinkRunnable implements Runnable {
+	public class RepaintRunnable implements Runnable {
 		@Override
 		public void run() {
 			while (true) {
