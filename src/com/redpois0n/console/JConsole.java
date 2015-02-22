@@ -38,7 +38,7 @@ public class JConsole extends JComponent {
 		
 		Arrays.fill(backgrounds, Color.black);
 		Arrays.fill(foregrounds, Color.white);
-		Font f = new Font("Arial", Font.PLAIN, 12);
+		Font f = new Font("Lucida Console", Font.PLAIN, 14);
 		Arrays.fill(fonts, f);
 		Arrays.fill(chars, 'a');
 
@@ -62,8 +62,8 @@ public class JConsole extends JComponent {
 				char c = chars[i];
 				Font font = fonts[i];
 				
-				int rx = getRealX(i);
-				int ry = getRealY(i);
+				int rx = getRealX(y);
+				int ry = getRealY(x);
 				
 				g.setColor(background);
 				g.fillRect(rx, ry, charwidth, charheight);
