@@ -6,7 +6,10 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JComponent;
 
@@ -16,6 +19,8 @@ public class JTerminal extends JComponent {
 	public static final Font DEFAULT_FONT = new Font("Lucida Console", Font.PLAIN, 14);
 	public static final Color DEFAULT_FOREGROUND = Color.white;
 	public static final Color DEFAULT_BACKGROUND = Color.black;
+	
+	private List<InputListener> listeners = new ArrayList<InputListener>();
 	
 	private Font[] fonts;
 	private Color[] foregrounds;
@@ -254,6 +259,10 @@ public class JTerminal extends JComponent {
 	}
 	
 	public void append(char c) {
+		if (c == File.separatorChar) {
+			enter();
+			return;
+		}
 		int i =  cursorx + cursory * columns;
 
 		if (cursorx + 1 >= columns && cursory + 1 >= rows) {
@@ -267,6 +276,25 @@ public class JTerminal extends JComponent {
 		
 		chars[i] = c;
 		
+		blinkThread.interrupt();
+	}
+	
+	public void append(String s) {
+		for (int i = 0; i < s.length(); i++) {
+			append(s.charAt(i));
+		}
+	}
+	
+	public void enter() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < columns; i++) {
+			int pos =  i + cursory * columns;
+
+			sb.append(chars[pos]);
+		}
+		
+		cursory++;
+		cursorx = 0;
 		blinkThread.interrupt();
 	}
 	
@@ -285,10 +313,8 @@ public class JTerminal extends JComponent {
 			} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 				delete();
 			} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				cursory++;
-				cursorx = 0;
-				blinkThread.interrupt();
-			} else {
+				enter();
+			} else if (Character.isAlphabetic(e.getKeyChar()) || Character.isDigit(e.getKeyChar())){
 				append(e.getKeyChar());
 			}
 		}
@@ -303,6 +329,14 @@ public class JTerminal extends JComponent {
 			
 		}
 		
+	}
+	
+	public void addListener(InputListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void removeListener(InputListener listener) {
+		listeners.remove(listener);
 	}
 	
 	public class BlinkRunnable implements Runnable {
