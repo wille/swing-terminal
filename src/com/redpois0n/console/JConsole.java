@@ -3,6 +3,8 @@ package com.redpois0n.console;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Arrays;
 
 import javax.swing.JComponent;
@@ -24,8 +26,8 @@ public class JConsole extends JComponent {
 	private boolean blinking;
 	private boolean blinkcursor;
 	
-	private int cursorrow;
-	private int cursorcolumn;
+	private int cursorx;
+	private int cursory;
 		
 	public JConsole() {
 		this.columns = 80;
@@ -46,6 +48,8 @@ public class JConsole extends JComponent {
 		this.charheight = 15;
 		
 		toggleBlink();
+		
+		super.addKeyListener(new KeyEventListener());
 	}
 
 	@Override
@@ -77,7 +81,7 @@ public class JConsole extends JComponent {
 		
 		if (blinking) {
 			g.setColor(Color.white);
-			g.fillRect(getRealX(cursorrow), getRealY(cursorcolumn), charwidth, charheight);
+			g.fillRect(getRealX(cursorx), getRealY(cursory), charwidth, charheight);
 		}
 		
 	}
@@ -100,6 +104,49 @@ public class JConsole extends JComponent {
 		if (blinkcursor) {
 			new Thread(new BlinkRunnable()).start();
 		}
+	}
+	
+	public void moveUp() {
+		
+	}
+	
+	public void moveDown() {
+		
+	}
+	
+	public void moveLeft() {
+		
+	}
+	
+	public void moveRight() {
+		
+	}
+	
+	public class KeyEventListener implements KeyListener {
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if (e.getKeyCode() == KeyEvent.VK_UP) {
+				moveUp();
+			} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+				moveDown();
+			} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+				moveLeft();
+			} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				moveRight();
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			
+		}
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+			
+		}
+		
 	}
 	
 	public class BlinkRunnable implements Runnable {
