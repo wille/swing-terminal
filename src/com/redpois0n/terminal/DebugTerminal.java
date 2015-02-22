@@ -1,11 +1,11 @@
-package com.redpois0n.console;
+package com.redpois0n.terminal;
 
 import javax.swing.JFrame;
 
-public class DebugConsole {
+public class DebugTerminal {
 
 	public static void main(String[] args) {
-		JConsole console = new JConsole();
+		JTerminal console = new JTerminal();
 		
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

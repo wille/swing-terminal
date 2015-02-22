@@ -1,4 +1,4 @@
-package com.redpois0n.console;
+package com.redpois0n.terminal;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 import javax.swing.JComponent;
 
 @SuppressWarnings("serial")
-public class JConsole extends JComponent {
+public class JTerminal extends JComponent {
 	
 	private Font[] fonts;
 	private Color[] foregrounds;
@@ -29,7 +29,7 @@ public class JConsole extends JComponent {
 	private int cursorx;
 	private int cursory;
 		
-	public JConsole() {
+	public JTerminal() {
 		this.columns = 80;
 		this.rows = 24;
 		
@@ -155,7 +155,7 @@ public class JConsole extends JComponent {
 			try {
 				while (blinkcursor) {
 					blinking = !blinking;
-					JConsole.this.repaint();
+					JTerminal.this.repaint();
 					Thread.sleep(600L);
 				}
 			} catch (Exception ex) {
