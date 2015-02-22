@@ -1,6 +1,7 @@
 package com.redpois0n.terminal;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -57,10 +58,16 @@ public class JTerminal extends JComponent {
 		toggleBlink();
 		
 		super.addKeyListener(new KeyEventListener());
+		
+		setSize();
 	}
 	
 	public KeyListener getKeyListener() {
 		return super.getKeyListeners()[0];
+	}
+	
+	public void setSize() {
+		super.setPreferredSize(new Dimension(getRealX(columns), getRealY(rows)));
 	}
 
 	@Override
@@ -71,6 +78,10 @@ public class JTerminal extends JComponent {
 		for (int x = 0; x < rows; x++) {
 			for (int y = 0; y < columns; y++) {
 				int i = y + x * columns;
+				
+				if (i >= backgrounds.length) {
+					break;
+				}
 				
 				Color background = backgrounds[i];
 
@@ -86,6 +97,10 @@ public class JTerminal extends JComponent {
 			for (int y = 0; y < columns; y++) {
 				int i = y + x * columns;
 						
+				if (i >= foregrounds.length) {
+					break;
+				}
+				
 				Color foreground = foregrounds[i];
 				char c = chars[i];
 				Font font = fonts[i];
@@ -115,15 +130,27 @@ public class JTerminal extends JComponent {
 		Color[] nbackgrounds = new Color[getTotal()];
 		char[] nchars = new char[getTotal()];
 		
-		System.arraycopy(fonts, 0, nfonts, fonts.length - 1, nfonts.length - fonts.length);
-		System.arraycopy(foregrounds, 0, nforegrounds, foregrounds.length - 1, nforegrounds.length - foregrounds.length);
-		System.arraycopy(backgrounds, 0, nbackgrounds, backgrounds.length - 1, nbackgrounds.length - backgrounds.length);
-		System.arraycopy(chars, 0, nchars, chars.length - 1, nchars.length - chars.length);
+		System.arraycopy(fonts, 0, nfonts, 0, fonts.length);
+		System.arraycopy(foregrounds, 0, nforegrounds, 0, foregrounds.length);
+		System.arraycopy(backgrounds, 0, nbackgrounds, 0, backgrounds.length);
+		System.arraycopy(chars, 0, nchars, 0, chars.length);		
 		
 		this.fonts = nfonts;
 		this.foregrounds = nforegrounds;
 		this.backgrounds = nbackgrounds;
 		this.chars = nchars;
+		
+		for (int i = 0; i < chars.length; i++) {
+			char c = chars[i];
+			if (c == '\u0000') {
+				chars[i] = ' ';
+			}
+		}
+		
+		cursorx = 0;
+		cursory++;
+		
+		setSize();
 	}
 	
 	public int getTotal() {
@@ -228,8 +255,7 @@ public class JTerminal extends JComponent {
 	
 	public void append(char c) {
 		int i =  cursorx + cursory * columns;
-		chars[i] = c;
-				
+
 		if (cursorx + 1 >= columns && cursory + 1 >= rows) {
 			expand();
 		} else if (cursorx + 1 >= columns) {
@@ -238,6 +264,10 @@ public class JTerminal extends JComponent {
 		} else {
 			moveRight();
 		}
+		
+		chars[i] = c;
+		
+		blinkThread.interrupt();
 	}
 	
 	public class KeyEventListener implements KeyListener {
@@ -254,6 +284,10 @@ public class JTerminal extends JComponent {
 				moveRight();
 			} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 				delete();
+			} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				cursory++;
+				cursorx = 0;
+				blinkThread.interrupt();
 			} else {
 				append(e.getKeyChar());
 			}
