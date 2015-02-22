@@ -9,9 +9,10 @@ public class DebugTerminal {
 		
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.addKeyListener(console.getKeyListener());
 		frame.add(console);
 		frame.setSize(650, 400);
-		frame.setVisible(true);
+		frame.setVisible(true);	
 	}
 
 }

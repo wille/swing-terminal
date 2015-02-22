@@ -51,6 +51,10 @@ public class JTerminal extends JComponent {
 		
 		super.addKeyListener(new KeyEventListener());
 	}
+	
+	public KeyListener getKeyListener() {
+		return super.getKeyListeners()[0];
+	}
 
 	@Override
 	public void paintComponent(Graphics g) {
@@ -107,25 +111,34 @@ public class JTerminal extends JComponent {
 	}
 	
 	public void moveUp() {
-		
+		if (cursory - 1 > 0) {
+			cursory--;
+		}
 	}
 	
-	public void moveDown() {
-		
+	public void moveDown() {	
+		if (cursory + 1 < rows) {
+			cursory++;
+		}
 	}
 	
 	public void moveLeft() {
-		
+		if (cursorx - 1 > 0) {
+			cursorx--;
+		}
 	}
 	
 	public void moveRight() {
-		
+		if (cursorx + 1 < columns) {
+			cursorx++;
+		}
 	}
 	
 	public class KeyEventListener implements KeyListener {
 
 		@Override
 		public void keyPressed(KeyEvent e) {
+			System.out.println(e.getKeyChar());
 			if (e.getKeyCode() == KeyEvent.VK_UP) {
 				moveUp();
 			} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
@@ -139,7 +152,7 @@ public class JTerminal extends JComponent {
 
 		@Override
 		public void keyReleased(KeyEvent e) {
-			
+
 		}
 
 		@Override
