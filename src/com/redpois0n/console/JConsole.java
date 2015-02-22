@@ -3,16 +3,17 @@ package com.redpois0n.console;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.util.Arrays;
 
 import javax.swing.JComponent;
 
 @SuppressWarnings("serial")
 public class JConsole extends JComponent {
 	
-	private final Font[] fonts;
-	private final Color[] foreground;
-	private final Color[] background;
-	private final char[] chars;
+	private Font[] fonts;
+	private Color[] foregrounds;
+	private Color[] backgrounds;
+	private char[] chars;
 	
 	private int columns;
 	private int rows;
@@ -31,9 +32,15 @@ public class JConsole extends JComponent {
 		this.rows = 24;
 		
 		this.fonts = new Font[getTotal()];
-		this.foreground = new Color[getTotal()];
-		this.background = new Color[getTotal()];
+		this.foregrounds = new Color[getTotal()];
+		this.backgrounds = new Color[getTotal()];
 		this.chars = new char[getTotal()];
+		
+		Arrays.fill(backgrounds, Color.black);
+		Arrays.fill(foregrounds, Color.white);
+		Font f = new Font("Arial", Font.PLAIN, 12);
+		Arrays.fill(fonts, f);
+		Arrays.fill(chars, 'a');
 
 		this.charwidth = 8;
 		this.charheight = 15;
@@ -45,11 +52,34 @@ public class JConsole extends JComponent {
 	public void paintComponent(Graphics g) {
 		g.setColor(Color.black);
 		g.fillRect(0, 0, getRealX(columns), getRealY(rows));
+
+		for (int x = 0; x < rows; x++) {
+			for (int y = 0; y < columns; y++) {
+				int i = y + x * y;
+						
+				Color background = backgrounds[i];
+				Color foreground = foregrounds[i];
+				char c = chars[i];
+				Font font = fonts[i];
+				
+				int rx = getRealX(i);
+				int ry = getRealY(i);
+				
+				g.setColor(background);
+				g.fillRect(rx, ry, charwidth, charheight);
+				
+				g.setColor(foreground);
+				g.setFont(font);
+				g.drawString(Character.toString(c), rx, ry + charheight);
+			}
+		}
+		
 		
 		if (blinking) {
 			g.setColor(Color.white);
 			g.fillRect(getRealX(cursorrow), getRealY(cursorcolumn), charwidth, charheight);
 		}
+		
 	}
 	
 	public int getTotal() {
