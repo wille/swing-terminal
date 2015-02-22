@@ -97,6 +97,25 @@ public class JTerminal extends JComponent {
 		
 	}
 	
+	public void expand() {
+		this.rows++;
+		
+		Font[] nfonts = new Font[getTotal()];
+		Color[] nforegrounds = new Color[getTotal()];
+		Color[] nbackgrounds = new Color[getTotal()];
+		char[] nchars = new char[getTotal()];
+		
+		System.arraycopy(fonts, 0, nfonts, fonts.length - 1, nfonts.length - fonts.length);
+		System.arraycopy(foregrounds, 0, nforegrounds, foregrounds.length - 1, nforegrounds.length - foregrounds.length);
+		System.arraycopy(backgrounds, 0, nbackgrounds, backgrounds.length - 1, nbackgrounds.length - backgrounds.length);
+		System.arraycopy(chars, 0, nchars, chars.length - 1, nchars.length - chars.length);
+		
+		this.fonts = nfonts;
+		this.foregrounds = nforegrounds;
+		this.backgrounds = nbackgrounds;
+		this.chars = nchars;
+	}
+	
 	public int getTotal() {
 		return columns + rows * columns;
 	}
@@ -152,9 +171,11 @@ public class JTerminal extends JComponent {
 	}
 	
 	public void delete() {				
-		if (cursorx == 0) {
+		if (cursorx == 0 && cursory > 0) {
 			cursorx = columns;
 			cursory--;
+		} else if (cursorx == 0 && cursory == 0) {
+			return;
 		} else {
 			moveLeft();
 		}
@@ -165,6 +186,32 @@ public class JTerminal extends JComponent {
 		foregrounds[i] = DEFAULT_FOREGROUND;
 		backgrounds[i] = DEFAULT_BACKGROUND;
 		fonts[i] = DEFAULT_FONT;
+		
+		Font[] tfonts = new Font[getTotal()];
+		Color[] tforegrounds = new Color[getTotal()];
+		Color[] tbackgrounds = new Color[getTotal()];
+		char[] tchars = new char[getTotal()];
+		
+		tfonts = fonts;
+		tforegrounds = foregrounds;
+		tbackgrounds = backgrounds;
+		tchars = chars;
+				
+		for (int s = i; s < getTotal(); s++) {
+			if (s + 1 >= fonts.length) {
+				return;
+			}
+			tfonts[s] = fonts[s + 1];
+			tforegrounds[s] = foregrounds[s + 1];
+			tbackgrounds[s] = backgrounds[s + 1];
+			tchars[s] = chars[s + 1];
+
+		}
+		
+		fonts = tfonts;
+		foregrounds = tforegrounds;
+		backgrounds = tbackgrounds;
+		chars = tchars;
 		
 		blinkThread.interrupt();
 	}
