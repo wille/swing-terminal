@@ -41,6 +41,7 @@ public class DebugTerminal {
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
+				terminal.append('\n');
 				terminal.append("root@master:~# ", Color.green, JTerminal.DEFAULT_BACKGROUND, JTerminal.DEFAULT_FONT);
 				terminal.setBlockAtCurrentPos();
 			}

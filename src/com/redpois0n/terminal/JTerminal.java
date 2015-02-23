@@ -7,7 +7,6 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -22,10 +21,10 @@ public class JTerminal extends JComponent {
 	private List<InputListener> inputListeners = new ArrayList<InputListener>();
 	private List<SizeChangeListener> sizeChangeListeners = new ArrayList<SizeChangeListener>();
 	
-	private Font[] fonts;
-	private Color[] foregrounds;
-	private Color[] backgrounds;
-	private char[] chars;
+	private List<Font> fonts;
+	private List<Color> foregrounds;
+	private List<Color> backgrounds;
+	private List<Character> chars;
 	
 	private Thread repaintThread;
 	
@@ -51,15 +50,15 @@ public class JTerminal extends JComponent {
 		this.columns = 80;
 		this.rows = 24;
 		
-		this.fonts = new Font[getTotal()];
-		this.foregrounds = new Color[getTotal()];
-		this.backgrounds = new Color[getTotal()];
-		this.chars = new char[getTotal()];
+		this.fonts = new ArrayList<Font>();
+		this.foregrounds = new ArrayList<Color>();
+		this.backgrounds = new ArrayList<Color>();
+		this.chars = new ArrayList<Character>();
 		
-		Arrays.fill(backgrounds, DEFAULT_BACKGROUND);
-		Arrays.fill(foregrounds, DEFAULT_FOREGROUND);
-		Arrays.fill(fonts, DEFAULT_FONT);
-		Arrays.fill(chars, ' ');
+		fill(chars, getTotal(), ' ');
+		fill(backgrounds, getTotal(), DEFAULT_BACKGROUND);
+		fill(foregrounds, getTotal(), DEFAULT_FOREGROUND);
+		fill(fonts, getTotal(), DEFAULT_FONT);
 		
 		this.charwidth = 8;
 		this.charheight = 15;
@@ -95,11 +94,11 @@ public class JTerminal extends JComponent {
 			for (int y = 0; y < columns; y++) {
 				int i = y + x * columns;
 				
-				if (i >= backgrounds.length) {
+				if (i >= backgrounds.size()) {
 					break;
 				}
 				
-				Color background = backgrounds[i];
+				Color background = backgrounds.get(i);
 
 				int rx = getRealX(y);
 				int ry = getRealY(x);	
@@ -113,13 +112,13 @@ public class JTerminal extends JComponent {
 			for (int y = 0; y < columns; y++) {
 				int i = y + x * columns;
 						
-				if (i >= foregrounds.length) {
+				if (i >= foregrounds.size()) {
 					break;
 				}
 				
-				Color foreground = foregrounds[i];
-				char c = chars[i];
-				Font font = fonts[i];
+				Color foreground = foregrounds.get(i);
+				char c = chars.get(i);
+				Font font = fonts.get(i);
 				
 				int rx = getRealX(y);
 				int ry = getRealY(x);	
@@ -139,28 +138,15 @@ public class JTerminal extends JComponent {
 	}
 	
 	public void expand() {
+		int total = getTotal();
+		
 		this.rows++;
 		
-		Font[] nfonts = new Font[getTotal()];
-		Color[] nforegrounds = new Color[getTotal()];
-		Color[] nbackgrounds = new Color[getTotal()];
-		char[] nchars = new char[getTotal()];
-		
-		System.arraycopy(fonts, 0, nfonts, 0, fonts.length);
-		System.arraycopy(foregrounds, 0, nforegrounds, 0, foregrounds.length);
-		System.arraycopy(backgrounds, 0, nbackgrounds, 0, backgrounds.length);
-		System.arraycopy(chars, 0, nchars, 0, chars.length);		
-		
-		this.fonts = nfonts;
-		this.foregrounds = nforegrounds;
-		this.backgrounds = nbackgrounds;
-		this.chars = nchars;
-		
-		for (int i = 0; i < chars.length; i++) {
-			char c = chars[i];
-			if (c == '\u0000') {
-				chars[i] = ' ';
-			}
+		for (int i = total; i <= getTotal(); i++) {
+			fonts.add(DEFAULT_FONT);
+			foregrounds.add(DEFAULT_FOREGROUND);
+			backgrounds.add(DEFAULT_BACKGROUND);
+			chars.add(' ');
 		}
 		
 		cursorx = 0;
@@ -250,32 +236,11 @@ public class JTerminal extends JComponent {
 		if (i + 1 == block) {
 			return;
 		}
-		
-		Font[] tfonts = new Font[getTotal()];
-		Color[] tforegrounds = new Color[getTotal()];
-		Color[] tbackgrounds = new Color[getTotal()];
-		char[] tchars = new char[getTotal()];
-		
-		tfonts = fonts;
-		tforegrounds = foregrounds;
-		tbackgrounds = backgrounds;
-		tchars = chars;
-				
-		for (int s = i; s < getTotal(); s++) {
-			if (s + 1 >= fonts.length) {
-				return;
-			}
-			tfonts[s] = fonts[s + 1];
-			tforegrounds[s] = foregrounds[s + 1];
-			tbackgrounds[s] = backgrounds[s + 1];
-			tchars[s] = chars[s + 1];
 
-		}
-		
-		fonts = tfonts;
-		foregrounds = tforegrounds;
-		backgrounds = tbackgrounds;
-		chars = tchars;
+		fonts.remove(i);
+		foregrounds.remove(i);
+		backgrounds.remove(i);
+		chars.remove(i);
 		
 		repaintThread.interrupt();
 	}
@@ -321,24 +286,10 @@ public class JTerminal extends JComponent {
 			tchars.add(cc);
 		}
 		
-		List<Color> tforegrounds = new ArrayList<Color>(Arrays.asList(foregrounds));
-		List<Color> tbackgrounds = new ArrayList<Color>(Arrays.asList(backgrounds));
-		List<Font> tfonts = new ArrayList<Font>(Arrays.asList(fonts));
-		
-		tchars.add(i, c);
-		tforegrounds.add(i, foreground);
-		tbackgrounds.add(i, background);
-		tfonts.add(i, font);
-		
-		chars = new char[tchars.size()];
-		int s = 0;
-		for (Character cc : tchars) {
-			chars[s++] = cc;
-		}
-		
-		foregrounds = tforegrounds.toArray(new Color[0]);
-		backgrounds = tbackgrounds.toArray(new Color[0]);
-		fonts = tfonts.toArray(new Font[0]);
+		chars.add(i, c);
+		foregrounds.add(i, foreground);
+		backgrounds.add(i, background);
+		fonts.add(i, font);
 
 		repaintThread.interrupt();
 		shouldScroll = true;
@@ -358,7 +309,7 @@ public class JTerminal extends JComponent {
 					continue;
 				}
 				
-				sb.append(chars[i]);
+				sb.append(chars.get(i));
 			}
 		}
 		
@@ -439,6 +390,12 @@ public class JTerminal extends JComponent {
 			shouldScroll = !shouldScroll;
 		}
 		return b;
+	}
+	
+	public <T> void fill(List<T> list, int size, T t) {
+		for (int i = 0; i < size; i++) {
+			list.add(t);
+		}
 	}
 	
 	public class RepaintRunnable implements Runnable {
