@@ -229,7 +229,9 @@ public class JTerminal extends JComponent {
 		delete(cursorx, cursory);
 	}
 	
-	public void delete(int x, int y) {				
+	public void delete(int x, int y) {		
+		boolean b = x == cursorx && y == cursory;
+		
 		if (cursorx == 0 && cursory > 0) {
 			cursorx = columns - 1;
 			cursory--;
@@ -239,8 +241,14 @@ public class JTerminal extends JComponent {
 			moveLeft();
 		}
 		
-		int i = x + y * columns;
-
+		int i;
+		
+		if (b) {
+			i = cursorx + cursory * columns;
+		} else {
+			i = x + y * columns;
+		}
+		
 		if (i + 1 == block) {
 			return;
 		}
@@ -315,6 +323,32 @@ public class JTerminal extends JComponent {
 		backgrounds[i] = background;
 		fonts[i] = font;
 		
+		Font[] tfonts = new Font[getTotal() + 1];
+		Color[] tforegrounds = new Color[getTotal() + 1];
+		Color[] tbackgrounds = new Color[getTotal() + 1];
+		char[] tchars = new char[getTotal() + 1];
+		
+		tfonts = fonts;
+		tforegrounds = foregrounds;
+		tbackgrounds = backgrounds;
+		tchars = chars;
+				
+		for (int s = i + 1; s < getTotal(); s++) {
+			if (s + 1 >= fonts.length) {
+				return;
+			}
+			tfonts[s + 1] = fonts[s];
+			tforegrounds[s + 1] = foregrounds[s];
+			tbackgrounds[s + 1] = backgrounds[s];
+			tchars[s + 1] = chars[s];
+
+		}
+		
+		fonts = tfonts;
+		foregrounds = tforegrounds;
+		backgrounds = tbackgrounds;
+		chars = tchars;
+				
 		repaintThread.interrupt();
 		shouldScroll = true;
 	}
