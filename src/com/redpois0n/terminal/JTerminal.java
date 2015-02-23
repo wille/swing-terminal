@@ -316,37 +316,24 @@ public class JTerminal extends JComponent {
 			moveRight();
 		}
 		
-		chars[i] = c;
+		//chars[i] = c;
 		foregrounds[i] = foreground;
 		backgrounds[i] = background;
 		fonts[i] = font;
 		
-		Font[] tfonts = new Font[getTotal() + 1];
-		Color[] tforegrounds = new Color[getTotal() + 1];
-		Color[] tbackgrounds = new Color[getTotal() + 1];
-		char[] tchars = new char[getTotal() + 1];
-		
-		tfonts = fonts;
-		tforegrounds = foregrounds;
-		tbackgrounds = backgrounds;
-		tchars = chars;
-				
-		for (int s = i + 1; s < getTotal(); s++) {
-			if (s + 1 >= fonts.length) {
-				return;
-			}
-			tfonts[s + 1] = fonts[s];
-			tforegrounds[s + 1] = foregrounds[s];
-			tbackgrounds[s + 1] = backgrounds[s];
-			tchars[s + 1] = chars[s];
-
+		List<Character> tchars = new ArrayList<Character>();
+		for (char cc : chars) {
+			tchars.add(cc);
 		}
 		
-		fonts = tfonts;
-		foregrounds = tforegrounds;
-		backgrounds = tbackgrounds;
-		chars = tchars;
-				
+		tchars.add(i, c);
+		
+		chars = new char[tchars.size()];
+		int s = 0;
+		for (Character cc : tchars) {
+			chars[s++] = cc;
+		}
+		
 		repaintThread.interrupt();
 		shouldScroll = true;
 	}
