@@ -64,6 +64,8 @@ public class DebugTerminal {
 		frame.setSize(675, 300);
 		frame.setVisible(true);
 		
+		terminal.append("JTerminal Test\n", Color.white, Color.red, JTerminal.DEFAULT_FONT);
+		terminal.append("Debug and Example\n\n");
 		terminal.append("root@master:~# ", Color.green, JTerminal.DEFAULT_BACKGROUND, JTerminal.DEFAULT_FONT);
 		terminal.setBlockAtCurrentPos();
 	}
