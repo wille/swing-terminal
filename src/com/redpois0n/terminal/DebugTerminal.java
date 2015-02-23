@@ -13,19 +13,19 @@ import javax.swing.JScrollPane;
 public class DebugTerminal {
 
 	public static void main(String[] args) {
-		final JTerminal console = new JTerminal();
+		final JTerminal terminal = new JTerminal();
 
 		final JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setViewportView(console);
+		scrollPane.setViewportView(terminal);
 		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 		    public void adjustmentValueChanged(AdjustmentEvent e) {  
-		    	if (console.scrollToBottom()) {
+		    	if (terminal.scrollToBottom()) {
 		    		 e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
 		    	}
 		    }
 		});
 
-		console.addInputListener(new InputListener() {
+		terminal.addInputListener(new InputListener() {
 			@Override
 			public void processCommand(JTerminal terminal, String command) {
 				System.out.println(command);
@@ -46,23 +46,26 @@ public class DebugTerminal {
 			}
 		});
 
-		console.addSizeChangeListener(new SizeChangeListener() {
+		terminal.addSizeChangeListener(new SizeChangeListener() {
 			@Override
 			public void sizeChange(JTerminal terminal, int width, int height) {
 				JScrollBar vertical = scrollPane.getVerticalScrollBar();
 				scrollPane.revalidate();
 				vertical.revalidate();
 				vertical.setValue(vertical.getMaximum());
-				console.revalidate();
+				terminal.revalidate();
 			}
 		});
 
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.addKeyListener(console.getKeyListener());
+		frame.addKeyListener(terminal.getKeyListener());
 		frame.add(scrollPane);
 		frame.setSize(675, 300);
 		frame.setVisible(true);
+		
+		terminal.append("root@master:~# ", Color.green, JTerminal.DEFAULT_BACKGROUND, JTerminal.DEFAULT_FONT);
+		terminal.setBlockAtCurrentPos();
 	}
 
 }
