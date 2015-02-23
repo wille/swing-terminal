@@ -1,5 +1,6 @@
 package com.redpois0n.terminal;
 
+import java.awt.Color;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.io.BufferedReader;
@@ -40,7 +41,7 @@ public class DebugTerminal {
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
-				terminal.append("root@master:~# ");
+				terminal.append("root@master:~# ", Color.green, JTerminal.DEFAULT_BACKGROUND, JTerminal.DEFAULT_FONT);
 				terminal.setBlockAtCurrentPos();
 			}
 		});

@@ -229,7 +229,11 @@ public class JTerminal extends JComponent {
 		repaintThread.interrupt();
 	}
 	
-	public void delete() {				
+	public void delete() {
+		delete(cursorx, cursory);
+	}
+	
+	public void delete(int x, int y) {				
 		if (cursorx == 0 && cursory > 0) {
 			cursorx = columns - 1;
 			cursory--;
@@ -239,7 +243,7 @@ public class JTerminal extends JComponent {
 			moveLeft();
 		}
 		
-		int i = cursorx + cursory * columns;
+		int i = x + y * columns;
 
 		if (i + 1 == block) {
 			return;
@@ -275,15 +279,35 @@ public class JTerminal extends JComponent {
 	}
 	
 	public void append(char c) {
+		insert(c, cursorx, cursory, DEFAULT_FOREGROUND, DEFAULT_BACKGROUND, DEFAULT_FONT);
+	}
+	
+	public void append(char c, Color foreground, Color background, Font font) {
+		insert(c, cursorx, cursory, foreground, background, font);
+	}
+	
+	public void append(String s) {
+		for (int i = 0; i < s.length(); i++) {
+			append(s.charAt(i));
+		}
+	}
+	
+	public void append(String s, Color foreground, Color background, Font font) {
+		for (int i = 0; i < s.length(); i++) {
+			append(s.charAt(i), foreground, background, font);
+		}
+	}
+	
+	public void insert(char c, int x, int y, Color foreground, Color background, Font font) {
 		if (Character.toString(c).equals(System.getProperty("line.separator")) || c == '\n') {
 			enter(false);
 			return;
 		}
-		int i =  cursorx + cursory * columns;
+		int i =  x + y * columns;
 
-		if (cursorx + 1 >= columns && cursory + 1 >= rows) {
+		if (x + 1 >= columns && y + 1 >= rows) {
 			expand();
-		} else if (cursorx + 1 >= columns) {
+		} else if (x + 1 >= columns) {
 			cursory++;
 			cursorx = 0;
 		} else {
@@ -291,15 +315,12 @@ public class JTerminal extends JComponent {
 		}
 		
 		chars[i] = c;
+		foregrounds[i] = foreground;
+		backgrounds[i] = background;
+		fonts[i] = font;
 		
 		repaintThread.interrupt();
 		shouldScroll = true;
-	}
-	
-	public void append(String s) {
-		for (int i = 0; i < s.length(); i++) {
-			append(s.charAt(i));
-		}
 	}
 	
 	public void enter(boolean press) {
