@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -87,6 +89,7 @@ public class JTerminal extends JComponent {
 
 	@Override
 	public void paintComponent(Graphics g) {
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g.setColor(DEFAULT_BACKGROUND);
 		g.fillRect(0, 0, getRealX(columns), getRealY(rows));
 
