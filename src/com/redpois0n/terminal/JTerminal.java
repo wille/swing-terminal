@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -278,7 +277,7 @@ public class JTerminal extends JComponent {
 	
 	public void append(char c) {
 		if (Character.toString(c).equals(System.getProperty("line.separator")) || c == '\n') {
-			enter();
+			enter(false);
 			return;
 		}
 		int i =  cursorx + cursory * columns;
@@ -304,7 +303,7 @@ public class JTerminal extends JComponent {
 		}
 	}
 	
-	public void enter() {
+	public void enter(boolean press) {
 		int latestBlock = block;
 		block = cursorx + cursory * columns;
 		
@@ -332,8 +331,10 @@ public class JTerminal extends JComponent {
 		repaintThread.interrupt();
 		shouldScroll = true;
 		
-		for (InputListener l : inputListeners) {
-			l.processCommand(this, sb.toString());
+		if (press) {
+			for (InputListener l : inputListeners) {
+				l.processCommand(this, sb.toString());
+			}
 		}
 	}
 	
@@ -352,7 +353,7 @@ public class JTerminal extends JComponent {
 			} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 				delete();
 			} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				enter();
+				enter(true);
 			} else if (Character.isAlphabetic(e.getKeyChar()) || Character.isDigit(e.getKeyChar())) {
 				append(e.getKeyChar());
 			}

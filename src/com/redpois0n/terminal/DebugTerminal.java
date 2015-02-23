@@ -2,6 +2,8 @@ package com.redpois0n.terminal;
 
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollBar;
@@ -26,6 +28,18 @@ public class DebugTerminal {
 			@Override
 			public void processCommand(JTerminal terminal, String command) {
 				System.out.println(command);
+				try {
+					Process p = Runtime.getRuntime().exec(command);
+					BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+					
+					String line;
+					
+					while ((line = reader.readLine()) != null) {
+						terminal.append(line + "\n");
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 				terminal.append("root@master:~# ");
 				terminal.setBlockAtCurrentPos();
 			}
