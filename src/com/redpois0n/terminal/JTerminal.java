@@ -128,7 +128,7 @@ public class JTerminal extends JComponent {
 				
 				g.setColor(foreground);
 				g.setFont(font);
-				g.drawString(Character.toString(c), rx, ry + charheight);
+				g.drawString(Character.toString(c), rx, ry + charheight - 2);
 			}
 		}
 		
@@ -404,7 +404,7 @@ public class JTerminal extends JComponent {
 				delete();
 			} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 				enter(true);
-			} else if (Character.isAlphabetic(e.getKeyChar()) || Character.isDigit(e.getKeyChar())) {
+			} else if (Character.isAlphabetic(e.getKeyChar()) || Character.isDigit(e.getKeyChar()) || Character.isSpaceChar(e.getKeyChar())) {
 				append(e.getKeyChar());
 			}
 		}
