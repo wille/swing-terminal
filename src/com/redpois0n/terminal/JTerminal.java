@@ -102,10 +102,6 @@ public class JTerminal extends JComponent {
 				}
 				
 				Color background = backgrounds[i];
-				
-				if (i == block) {
-					background = Color.red;
-				}
 
 				int rx = getRealX(y);
 				int ry = getRealY(x);	
