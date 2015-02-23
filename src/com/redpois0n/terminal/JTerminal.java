@@ -316,17 +316,19 @@ public class JTerminal extends JComponent {
 			moveRight();
 		}
 		
-		//chars[i] = c;
-		foregrounds[i] = foreground;
-		backgrounds[i] = background;
-		fonts[i] = font;
-		
 		List<Character> tchars = new ArrayList<Character>();
 		for (char cc : chars) {
 			tchars.add(cc);
 		}
 		
+		List<Color> tforegrounds = new ArrayList<Color>(Arrays.asList(foregrounds));
+		List<Color> tbackgrounds = new ArrayList<Color>(Arrays.asList(backgrounds));
+		List<Font> tfonts = new ArrayList<Font>(Arrays.asList(fonts));
+		
 		tchars.add(i, c);
+		tforegrounds.add(i, foreground);
+		tbackgrounds.add(i, background);
+		tfonts.add(i, font);
 		
 		chars = new char[tchars.size()];
 		int s = 0;
@@ -334,6 +336,10 @@ public class JTerminal extends JComponent {
 			chars[s++] = cc;
 		}
 		
+		foregrounds = tforegrounds.toArray(new Color[0]);
+		backgrounds = tbackgrounds.toArray(new Color[0]);
+		fonts = tfonts.toArray(new Font[0]);
+
 		repaintThread.interrupt();
 		shouldScroll = true;
 	}
