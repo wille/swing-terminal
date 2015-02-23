@@ -63,9 +63,7 @@ public class JTerminal extends JComponent {
 		
 		this.charwidth = 8;
 		this.charheight = 15;
-		
-		this.cursory = this.rows - 1;
-		
+				
 		toggleBlink();
 		
 		super.addKeyListener(new KeyEventListener());
