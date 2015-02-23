@@ -240,11 +240,10 @@ public class JTerminal extends JComponent {
 		}
 		
 		int i = cursorx + cursory * columns;
-		
-		chars[i] = ' ';
-		foregrounds[i] = DEFAULT_FOREGROUND;
-		backgrounds[i] = DEFAULT_BACKGROUND;
-		fonts[i] = DEFAULT_FONT;
+
+		if (i + 1 == block) {
+			return;
+		}
 		
 		Font[] tfonts = new Font[getTotal()];
 		Color[] tforegrounds = new Color[getTotal()];
