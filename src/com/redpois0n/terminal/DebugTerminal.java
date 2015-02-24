@@ -9,10 +9,17 @@ import java.io.InputStreamReader;
 import javax.swing.JFrame;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.UIManager;
 
 public class DebugTerminal {
 
 	public static void main(String[] args) {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
 		final JTerminal terminal = new JTerminal();
 
 		final JScrollPane scrollPane = new JScrollPane();
