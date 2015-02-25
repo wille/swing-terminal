@@ -352,7 +352,7 @@ public class JTerminal extends JComponent {
 		
 		if (press) {
 			for (InputListener l : inputListeners) {
-				l.processCommand(this, sb.toString());
+				l.processCommand(this, sb.toString().trim());
 			}
 		}
 	}
