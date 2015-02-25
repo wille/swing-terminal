@@ -19,6 +19,7 @@ public class JTerminal extends JComponent {
 	public static final Font DEFAULT_FONT = new Font("Lucida Console", Font.PLAIN, 14);
 	public static final Color DEFAULT_FOREGROUND = Color.white;
 	public static final Color DEFAULT_BACKGROUND = Color.black;
+	public static final char NULL_CHAR = '\u0000';
 	
 	private List<InputListener> inputListeners = new ArrayList<InputListener>();
 	private List<SizeChangeListener> sizeChangeListeners = new ArrayList<SizeChangeListener>();
@@ -57,7 +58,7 @@ public class JTerminal extends JComponent {
 		this.backgrounds = new ArrayList<Color>();
 		this.chars = new ArrayList<Character>();
 		
-		fill(chars, getTotal(), ' ');
+		fill(chars, getTotal(), NULL_CHAR);
 		fill(backgrounds, getTotal(), DEFAULT_BACKGROUND);
 		fill(foregrounds, getTotal(), DEFAULT_FOREGROUND);
 		fill(fonts, getTotal(), DEFAULT_FONT);
@@ -126,6 +127,10 @@ public class JTerminal extends JComponent {
 				int rx = getRealX(y);
 				int ry = getRealY(x);	
 				
+				if (c == NULL_CHAR) {
+					continue;
+				}
+				
 				g.setColor(foreground);
 				g.setFont(font);
 				g.drawString(Character.toString(c), rx, ry + charheight - 2);
@@ -149,7 +154,7 @@ public class JTerminal extends JComponent {
 			fonts.add(DEFAULT_FONT);
 			foregrounds.add(DEFAULT_FOREGROUND);
 			backgrounds.add(DEFAULT_BACKGROUND);
-			chars.add(' ');
+			chars.add(NULL_CHAR);
 		}
 		
 		cursorx = 0;
@@ -208,6 +213,7 @@ public class JTerminal extends JComponent {
 		if (cursorx + 1 < columns) {
 			cursorx++;
 		}
+
 		
 		repaintThread.interrupt();
 	}
@@ -273,7 +279,7 @@ public class JTerminal extends JComponent {
 			enter(false);
 			return;
 		}
-		int i =  x + y * columns;
+		int i = x + y * columns;
 
 		if (x + 1 >= columns && y + 1 >= rows) {
 			expand();
@@ -292,10 +298,28 @@ public class JTerminal extends JComponent {
 		chars.add(i, c);
 		foregrounds.add(i, foreground);
 		backgrounds.add(i, background);
-		fonts.add(i, font);
+		fonts.add(i, font);		
 
 		repaintThread.interrupt();
 		shouldScroll = true;
+	}
+	
+	public int getTypedEnd() {				
+		for (int x = 0; x < rows; x++) {
+			for (int y = 0; y < columns; y++) {
+				int i = y + x * columns;
+				
+				if (chars.get(i) == NULL_CHAR) {
+					return i;
+				} 
+				
+				if (i < block) {
+					continue;
+				}	
+			}
+		}
+		
+		return -1;
 	}
 	
 	public void enter(boolean press) {
@@ -343,7 +367,7 @@ public class JTerminal extends JComponent {
 				moveDown();
 			} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 				moveLeft();
-			} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			} else if (e.getKeyCode() == KeyEvent.VK_RIGHT && chars.get(cursorx + cursory * columns) != NULL_CHAR) {
 				moveRight();
 			} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 				delete();
