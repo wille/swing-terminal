@@ -45,6 +45,7 @@ public class JTerminal extends JComponent {
 	
 	private boolean shouldScroll;
 	private boolean shouldScrollUp;
+	private boolean ctrl;
 	
 	private int block;
 		
@@ -370,6 +371,16 @@ public class JTerminal extends JComponent {
 		}
 	}
 	
+	public void keyPressed(KeyEvent e) {
+		char c = e.getKeyChar();
+		
+		boolean b = Character.isAlphabetic(e.getKeyChar()) || Character.isDigit(e.getKeyChar()) || Character.isSpaceChar(e.getKeyChar());
+		
+		if (b) {
+			append(c);
+		}
+	}
+	
 	public class KeyEventListener implements KeyListener {
 
 		@Override
@@ -386,14 +397,18 @@ public class JTerminal extends JComponent {
 				delete();
 			} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 				enter(true);
-			} else if (Character.isAlphabetic(e.getKeyChar()) || Character.isDigit(e.getKeyChar()) || Character.isSpaceChar(e.getKeyChar())) {
-				append(e.getKeyChar());
+			} else if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+				ctrl = true;
+			} else {
+				keyPressed(e);
 			}
 		}
 
 		@Override
 		public void keyReleased(KeyEvent e) {
-
+			if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+				ctrl = false;
+			}
 		}
 
 		@Override
