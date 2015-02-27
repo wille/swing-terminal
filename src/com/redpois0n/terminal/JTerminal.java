@@ -44,6 +44,7 @@ public class JTerminal extends JComponent {
 	private int cursory;
 	
 	private boolean shouldScroll;
+	private boolean shouldScrollUp;
 	
 	private int block;
 		
@@ -81,6 +82,8 @@ public class JTerminal extends JComponent {
 		setBlockAtCurrentPos();
 		
 		setSize();
+		shouldScroll = true;
+		shouldScrollUp = true;
 	}
 	
 	public KeyListener getKeyListener() {
@@ -426,6 +429,16 @@ public class JTerminal extends JComponent {
 		if (b) {
 			shouldScroll = !shouldScroll;
 		}
+		return b;
+	}
+	
+	public boolean scrollUp() {
+		boolean b = shouldScrollUp;
+		
+		if (b) {
+			shouldScrollUp = !shouldScrollUp;
+		}
+		
 		return b;
 	}
 	

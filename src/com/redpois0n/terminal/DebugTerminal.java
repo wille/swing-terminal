@@ -30,8 +30,9 @@ public class DebugTerminal {
 		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 		    public void adjustmentValueChanged(AdjustmentEvent e) {  
 		    	if (terminal.scrollToBottom()) {
-		    		 e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-		    	}
+		    		boolean scrollUp = terminal.scrollUp();
+		    		e.getAdjustable().setValue(scrollUp ? 0 : e.getAdjustable().getMaximum());  
+		    	} 
 		    }
 		});
 
