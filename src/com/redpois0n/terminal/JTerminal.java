@@ -50,6 +50,19 @@ public class JTerminal extends JComponent {
 	public JTerminal() {
 		this.repaintThread = new Thread(new RepaintRunnable());
 		
+		clear();
+		
+		this.charwidth = 8;
+		this.charheight = 15;
+				
+		toggleBlink();
+		
+		super.addKeyListener(new KeyEventListener());
+		
+		setSize();
+	}
+	
+	public void clear() {
 		this.columns = 80;
 		this.rows = 24;
 		
@@ -62,15 +75,6 @@ public class JTerminal extends JComponent {
 		fill(backgrounds, getTotal(), DEFAULT_BACKGROUND);
 		fill(foregrounds, getTotal(), DEFAULT_FOREGROUND);
 		fill(fonts, getTotal(), DEFAULT_FONT);
-		
-		this.charwidth = 8;
-		this.charheight = 15;
-				
-		toggleBlink();
-		
-		super.addKeyListener(new KeyEventListener());
-		
-		setSize();
 	}
 	
 	public KeyListener getKeyListener() {
