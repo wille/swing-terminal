@@ -18,7 +18,7 @@ import com.redpois0n.oslib.OperatingSystem;
 @SuppressWarnings("serial")
 public class JTerminal extends JComponent {
 	
-	public static final Font DEFAULT_FONT = new Font(OperatingSystem.getOperatingSystem() == OperatingSystem.WINDOWS ? "Lucida Console" : "Garuda", Font.PLAIN, 14);
+	public static final Font DEFAULT_FONT = new Font(OperatingSystem.getOperatingSystem() == OperatingSystem.WINDOWS ? "Lucida Console" : "Arial", Font.PLAIN, 14);
 	public static final Color DEFAULT_FOREGROUND = Color.white;
 	public static final Color DEFAULT_BACKGROUND = Color.black;
 	public static final char NULL_CHAR = '\u0000';
@@ -475,11 +475,7 @@ public class JTerminal extends JComponent {
 			return;
 		}
 		
-		boolean b = Character.isAlphabetic(e.getKeyChar()) || Character.isDigit(e.getKeyChar()) || Character.isSpaceChar(e.getKeyChar());
-		
-		if (b) {
-			append(c);
-		}
+		append(c);
 	}
 	
 	public class KeyEventListener implements KeyListener {
@@ -500,8 +496,6 @@ public class JTerminal extends JComponent {
 				enter(true);
 			} else if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
 				ctrl = true;
-			} else {
-				JTerminal.this.keyPressed(e);
 			}
 		}
 
@@ -513,8 +507,8 @@ public class JTerminal extends JComponent {
 		}
 
 		@Override
-		public void keyTyped(KeyEvent e) {
-			
+		public void keyTyped(KeyEvent e) {		
+			JTerminal.this.keyPressed(e);
 		}
 		
 	}
