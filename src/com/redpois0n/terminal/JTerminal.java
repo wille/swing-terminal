@@ -374,6 +374,13 @@ public class JTerminal extends JComponent {
 	public void keyPressed(KeyEvent e) {
 		char c = e.getKeyChar();
 		
+		if (ctrl && e.getKeyCode() == KeyEvent.VK_C) {
+			for (InputListener l : inputListeners) {
+				l.onTerminate(this);
+			}
+			return;
+		}
+		
 		boolean b = Character.isAlphabetic(e.getKeyChar()) || Character.isDigit(e.getKeyChar()) || Character.isSpaceChar(e.getKeyChar());
 		
 		if (b) {
@@ -400,7 +407,7 @@ public class JTerminal extends JComponent {
 			} else if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
 				ctrl = true;
 			} else {
-				keyPressed(e);
+				JTerminal.this.keyPressed(e);
 			}
 		}
 

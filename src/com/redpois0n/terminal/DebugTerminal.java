@@ -48,6 +48,11 @@ public class DebugTerminal {
 				terminal.append('\n');
 				terminal.setBlockAtCurrentPos();
 			}
+			
+			@Override
+			public void onTerminate(JTerminal terminal) {
+
+			}
 		});
 
 		terminal.addSizeChangeListener(new SizeChangeListener() {
