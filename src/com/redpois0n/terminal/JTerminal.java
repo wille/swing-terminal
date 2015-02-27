@@ -64,6 +64,9 @@ public class JTerminal extends JComponent {
 		setSize();
 	}
 	
+	/**
+	 * Resets whole terminal
+	 */
 	public void clear() {
 		this.columns = 80;
 		this.rows = 24;
@@ -87,10 +90,17 @@ public class JTerminal extends JComponent {
 		shouldScrollUp = true;
 	}
 	
+	/**
+	 * Gets main key listener
+	 * @return
+	 */
 	public KeyListener getKeyListener() {
 		return super.getKeyListeners()[0];
 	}
 	
+	/**
+	 * Called when size changed, notifies change listeners and sets preferred size
+	 */
 	public void setSize() {
 		int width = getRealX(columns);
 		int height = getRealY(rows);
@@ -159,6 +169,9 @@ public class JTerminal extends JComponent {
 		
 	}
 	
+	/**
+	 * Adds a row to bottom
+	 */
 	public void expand() {
 		int total = getTotal();
 		
@@ -177,18 +190,35 @@ public class JTerminal extends JComponent {
 		setSize();			
 	}
 	
+	/**
+	 * Gets total size of lists
+	 * @return
+	 */
 	public int getTotal() {
 		return columns + rows * columns;
 	}
 	
+	/**
+	 * Gets on screen position for specified x
+	 * @param x
+	 * @return x * character width
+	 */
 	public int getRealX(int x) {
 		return x * charwidth;
 	}
 	
+	/**
+	 * Gets on screen position for specified y
+	 * @param y
+	 * @return y * character height
+	 */
 	public int getRealY(int y) {
 		return y * charheight;
 	}
 	
+	/**
+	 * Toggles cursor blinking
+	 */
 	public void toggleBlink() {
 		blinkcursor = !blinkcursor;
 		
@@ -199,6 +229,9 @@ public class JTerminal extends JComponent {
 		}
 	}
 	
+	/**
+	 * Moves cursor up
+	 */
 	public void moveUp() {
 		if (cursory > 0 && cursorx + (cursory - 1) * columns >= block) {
 			cursory--;
@@ -207,6 +240,9 @@ public class JTerminal extends JComponent {
 		repaintThread.interrupt();
 	}
 	
+	/**
+	 * Moves cursor down
+	 */
 	public void moveDown() {	
 		if (cursory + 1 < rows) {
 			cursory++;
@@ -215,6 +251,9 @@ public class JTerminal extends JComponent {
 		repaintThread.interrupt();
 	}
 	
+	/**
+	 * Moves cursor to the left
+	 */
 	public void moveLeft() {
 		if (cursorx - 1 >= 0 && cursorx - 1 + cursory * columns >= block) {
 			cursorx--;
@@ -223,19 +262,29 @@ public class JTerminal extends JComponent {
 		repaintThread.interrupt();
 	}
 	
+	/**
+	 * Moves cursor to the right
+	 */
 	public void moveRight() {
 		if (cursorx + 1 < columns) {
 			cursorx++;
 		}
-
 		
 		repaintThread.interrupt();
 	}
 	
+	/**
+	 * Delete character at current cursor position
+	 */
 	public void delete() {
 		delete(cursorx, cursory);
 	}
 	
+	/**
+	 * Deletes character at specified position
+	 * @param x
+	 * @param y
+	 */
 	public void delete(int x, int y) {		
 		boolean b = x == cursorx && y == cursory;
 		
@@ -268,26 +317,57 @@ public class JTerminal extends JComponent {
 		repaintThread.interrupt();
 	}
 	
+	/**
+	 * Append character
+	 * @param c
+	 */
 	public void append(char c) {
 		insert(c, cursorx, cursory, DEFAULT_FOREGROUND, DEFAULT_BACKGROUND, DEFAULT_FONT);
 	}
 	
+	/**
+	 * Append character
+	 * @param c
+	 * @param foreground
+	 * @param background
+	 * @param font
+	 */
 	public void append(char c, Color foreground, Color background, Font font) {
 		insert(c, cursorx, cursory, foreground, background, font);
 	}
 	
+	/**
+	 * Append string
+	 * @param s
+	 */
 	public void append(String s) {
 		for (int i = 0; i < s.length(); i++) {
 			append(s.charAt(i));
 		}
 	}
 	
+	/**
+	 * Append string
+	 * @param s
+	 * @param foreground
+	 * @param background
+	 * @param font
+	 */
 	public void append(String s, Color foreground, Color background, Font font) {
 		for (int i = 0; i < s.length(); i++) {
 			append(s.charAt(i), foreground, background, font);
 		}
 	}
 	
+	/**
+	 * Inserts character at x+y*columns
+	 * @param c
+	 * @param x
+	 * @param y
+	 * @param foreground
+	 * @param background
+	 * @param font
+	 */
 	public void insert(char c, int x, int y, Color foreground, Color background, Font font) {
 		if (Character.toString(c).equals(System.getProperty("line.separator")) || c == '\n') {
 			enter(false);
@@ -318,6 +398,10 @@ public class JTerminal extends JComponent {
 		shouldScroll = true;
 	}
 	
+	/**
+	 * Get where current typed text ends
+	 * @return
+	 */
 	public int getTypedEnd() {				
 		for (int x = 0; x < rows; x++) {
 			for (int y = 0; y < columns; y++) {
@@ -336,6 +420,10 @@ public class JTerminal extends JComponent {
 		return -1;
 	}
 	
+	/**
+	 * Called when enter is pressed (newline)
+	 * @param press If enter actually is pressed or if just a new line should be added
+	 */
 	public void enter(boolean press) {
 		int latestBlock = block;
 		block = cursorx + cursory * columns;
@@ -371,6 +459,10 @@ public class JTerminal extends JComponent {
 		}
 	}
 	
+	/**
+	 * Called when key pressed, checks if character is valid and checks for combinations such as Ctrl+C
+	 * @param e
+	 */
 	public void keyPressed(KeyEvent e) {
 		char c = e.getKeyChar();
 		
@@ -441,10 +533,17 @@ public class JTerminal extends JComponent {
 		sizeChangeListeners.remove(listener);
 	}
 	
+	/**
+	 * Sets block at current position (good after user pressed enter and new line text has been appended)
+	 */
 	public void setBlockAtCurrentPos() {
 		this.block = cursorx + cursory * columns;
 	}
 
+	/**
+	 * Checks if should scroll to bottom, and automatically changes the variable to the opposite
+	 * @return
+	 */
 	public boolean scrollToBottom() {
 		boolean b = shouldScroll;
 		
@@ -454,6 +553,10 @@ public class JTerminal extends JComponent {
 		return b;
 	}
 	
+	/**
+	 * Checks if should scroll to top, and automaticalyl changes the variable to the opposite
+	 * @return
+	 */
 	public boolean scrollUp() {
 		boolean b = shouldScrollUp;
 		
@@ -464,12 +567,21 @@ public class JTerminal extends JComponent {
 		return b;
 	}
 	
+	/**
+	 * Fills list with specified value
+	 * @param list
+	 * @param size Fills from index 0 to size - 1
+	 * @param t Value to fill with
+	 */
 	public <T> void fill(List<T> list, int size, T t) {
 		for (int i = 0; i < size; i++) {
 			list.add(t);
 		}
 	}
 	
+	/**
+	 * Repaint thread
+	 */
 	public class RepaintRunnable implements Runnable {
 		@Override
 		public void run() {
