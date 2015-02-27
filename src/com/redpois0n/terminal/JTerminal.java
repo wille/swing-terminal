@@ -75,6 +75,10 @@ public class JTerminal extends JComponent {
 		fill(backgrounds, getTotal(), DEFAULT_BACKGROUND);
 		fill(foregrounds, getTotal(), DEFAULT_FOREGROUND);
 		fill(fonts, getTotal(), DEFAULT_FONT);
+		
+		this.cursorx = 0;
+		this.cursory = 0;
+		setBlockAtCurrentPos();
 	}
 	
 	public KeyListener getKeyListener() {
