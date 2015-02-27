@@ -12,6 +12,8 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 
+import com.redpois0n.oslib.OperatingSystem;
+
 public class DebugTerminal {
 	
 	private static Process p;
@@ -72,7 +74,7 @@ public class DebugTerminal {
 		frame.add(scrollPane);
 		frame.setSize(675, 300);
 		frame.setVisible(true);
-		
+
 		terminal.append("JTerminal Test\n", Color.white, Color.red, JTerminal.DEFAULT_FONT);
 		terminal.append("Debug and Example\n\n");
 		terminal.setBlockAtCurrentPos();
@@ -99,7 +101,7 @@ public class DebugTerminal {
 	}
 	
 	public static void startShell() throws Exception {
-		if (System.getProperty("os.name").contains("Win")) {
+		if (OperatingSystem.getOperatingSystem() == OperatingSystem.WINDOWS) {
 			ProcessBuilder builder = new ProcessBuilder("cmd");
 			builder.redirectErrorStream(true);
 			p = builder.start();
