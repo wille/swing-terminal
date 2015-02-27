@@ -38,13 +38,12 @@ public class DebugTerminal {
 		terminal.addInputListener(new InputListener() {
 			@Override
 			public void processCommand(JTerminal terminal, String command) {
-				System.out.println(command);
-				try {
-					PrintWriter input = new PrintWriter(p.getOutputStream(), true);
-					input.println(command);
-				} catch (Exception ex) {
-					ex.printStackTrace();
+				if (command.equalsIgnoreCase("clear") || command.equalsIgnoreCase("cls")) {
+					terminal.clear();
+					return;
 				}
+				System.out.println(command);
+				append(command);
 				terminal.append('\n');
 				terminal.setBlockAtCurrentPos();
 			}
@@ -102,6 +101,15 @@ public class DebugTerminal {
 			ProcessBuilder builder = new ProcessBuilder("/bin/bash");
 			builder.redirectErrorStream(true);
 			p = builder.start();
+		}
+	}
+	
+	public static void append(String command) {		
+		try {
+			PrintWriter input = new PrintWriter(p.getOutputStream(), true);
+			input.println(command);
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 
