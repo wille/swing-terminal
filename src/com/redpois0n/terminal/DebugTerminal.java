@@ -51,7 +51,7 @@ public class DebugTerminal {
 			
 			@Override
 			public void onTerminate(JTerminal terminal) {
-
+			
 			}
 		});
 
@@ -112,8 +112,7 @@ public class DebugTerminal {
 	
 	public static void append(String command) {		
 		try {
-			PrintWriter input = new PrintWriter(p.getOutputStream(), true);
-			input.println(command);
+			new PrintWriter(p.getOutputStream(), true).println(command);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
