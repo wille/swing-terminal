@@ -5,6 +5,7 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollBar;
@@ -12,6 +13,8 @@ import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 
 public class DebugTerminal {
+	
+	private static Process p;
 
 	public static void main(String[] args) {
 		try {
@@ -37,19 +40,12 @@ public class DebugTerminal {
 			public void processCommand(JTerminal terminal, String command) {
 				System.out.println(command);
 				try {
-					Process p = Runtime.getRuntime().exec(command);
-					BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-					
-					String line;
-					
-					while ((line = reader.readLine()) != null) {
-						terminal.append(line + "\n");
-					}
+					PrintWriter input = new PrintWriter(p.getOutputStream(), true);
+					input.println(command);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 				terminal.append('\n');
-				terminal.append("root@master:~# ", Color.green, JTerminal.DEFAULT_BACKGROUND, JTerminal.DEFAULT_FONT);
 				terminal.setBlockAtCurrentPos();
 			}
 		});
@@ -74,8 +70,39 @@ public class DebugTerminal {
 		
 		terminal.append("JTerminal Test\n", Color.white, Color.red, JTerminal.DEFAULT_FONT);
 		terminal.append("Debug and Example\n\n");
-		terminal.append("root@master:~# ", Color.green, JTerminal.DEFAULT_BACKGROUND, JTerminal.DEFAULT_FONT);
 		terminal.setBlockAtCurrentPos();
+		
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					while (true) {
+						startShell();
+						
+						BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+						
+						String line;
+						
+						while ((line = reader.readLine()) != null) {
+							terminal.append(line + "\n");
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+	}
+	
+	public static void startShell() throws Exception {
+		if (System.getProperty("os.name").contains("Win")) {
+			ProcessBuilder builder = new ProcessBuilder("cmd");
+			builder.redirectErrorStream(true);
+			p = builder.start();
+		} else {
+			ProcessBuilder builder = new ProcessBuilder("/bin/bash");
+			builder.redirectErrorStream(true);
+			p = builder.start();
+		}
 	}
 
 }
