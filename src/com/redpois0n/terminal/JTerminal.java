@@ -79,6 +79,8 @@ public class JTerminal extends JComponent {
 		this.cursorx = 0;
 		this.cursory = 0;
 		setBlockAtCurrentPos();
+		
+		setSize();
 	}
 	
 	public KeyListener getKeyListener() {
