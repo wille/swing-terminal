@@ -100,15 +100,18 @@ public class DebugTerminal {
 	}
 	
 	public static void startShell() throws Exception {
+		String shell;
 		if (OperatingSystem.getOperatingSystem() == OperatingSystem.WINDOWS) {
-			ProcessBuilder builder = new ProcessBuilder("cmd");
-			builder.redirectErrorStream(true);
-			p = builder.start();
+			shell = "cmd";
+		} else if (OperatingSystem.isBSD()) {		
+			shell = "/bin/tcsh";
 		} else {
-			ProcessBuilder builder = new ProcessBuilder("/bin/bash");
-			builder.redirectErrorStream(true);
-			p = builder.start();
+			shell = "/bin/bash";
 		}
+		
+		ProcessBuilder builder = new ProcessBuilder(shell);
+		builder.redirectErrorStream(true);
+		p = builder.start();
 	}
 	
 	public static void append(String command) {		
