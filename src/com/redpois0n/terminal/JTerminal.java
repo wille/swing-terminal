@@ -6,6 +6,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -14,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 @SuppressWarnings("serial")
 public class JTerminal extends JComponent {
@@ -58,6 +62,8 @@ public class JTerminal extends JComponent {
 	private int select1;
 	private int select2;
 	
+	private JPopupMenu menu;
+	
 	public JTerminal() {
 		this.repaintThread = new Thread(new RepaintRunnable());
 		
@@ -73,6 +79,53 @@ public class JTerminal extends JComponent {
 		super.addMouseMotionListener(new MouseEventListener());
 		
 		setSize();
+		
+		menu = new JPopupMenu();
+		
+		JMenuItem miCopy = new JMenuItem("Copy");
+		miCopy.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent paramActionEvent) {
+				
+			}	
+		});
+		menu.add(miCopy);
+		
+		JMenuItem miCut = new JMenuItem("Cut");
+		miCopy.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent paramActionEvent) {
+				
+			}	
+		});
+		menu.add(miCut);
+		
+		JMenuItem miPaste = new JMenuItem("Paste");
+		miCopy.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent paramActionEvent) {
+				
+			}	
+		});
+		menu.add(miPaste);
+		
+		super.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+
+			private void showMenu(MouseEvent e) {
+				menu.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
 	}
 	
 	/**
