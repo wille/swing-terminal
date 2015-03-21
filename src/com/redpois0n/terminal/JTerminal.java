@@ -315,10 +315,10 @@ public class JTerminal extends JComponent {
 			return;
 		}
 
-		fonts.set(i, DEFAULT_FONT);
-		foregrounds.set(i, DEFAULT_FOREGROUND);
-		backgrounds.set(i, DEFAULT_BACKGROUND);
-		chars.set(i, NULL_CHAR);
+		fonts.remove(i);
+		foregrounds.remove(i);
+		backgrounds.remove(i);
+		chars.remove(i);
 		
 		repaintThread.interrupt();
 	}
