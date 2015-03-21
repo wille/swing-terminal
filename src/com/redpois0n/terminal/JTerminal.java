@@ -299,9 +299,7 @@ public class JTerminal extends JComponent {
 	 * @param x
 	 * @param y
 	 */
-	public void delete(int x, int y) {		
-		boolean b = x == cursorx && y == cursory;
-		
+	public void delete(int x, int y) {				
 		if (cursorx == 0 && cursory > 0) {
 			cursorx = columns - 1;
 			cursory--;
@@ -311,22 +309,16 @@ public class JTerminal extends JComponent {
 			moveLeft();
 		}
 		
-		int i;
-		
-		if (b) {
-			i = cursorx + cursory * columns;
-		} else {
-			i = x + y * columns;
-		}
+		int i = x + y * columns;
 		
 		if (i + 1 == block) {
 			return;
 		}
 
-		fonts.remove(i);
-		foregrounds.remove(i);
-		backgrounds.remove(i);
-		chars.remove(i);
+		fonts.set(i, DEFAULT_FONT);
+		foregrounds.set(i, DEFAULT_FOREGROUND);
+		backgrounds.set(i, DEFAULT_BACKGROUND);
+		chars.set(i, NULL_CHAR);
 		
 		repaintThread.interrupt();
 	}
@@ -402,7 +394,7 @@ public class JTerminal extends JComponent {
 		for (int cc = 0; cc < chars.size(); cc++) {
 			tchars.add(chars.get(cc));
 		}
-		
+				
 		chars.add(i, c);
 		foregrounds.add(i, foreground);
 		backgrounds.add(i, background);
@@ -520,7 +512,9 @@ public class JTerminal extends JComponent {
 
 		@Override
 		public void keyTyped(KeyEvent e) {		
-			JTerminal.this.keyPressed(e);
+			if ((int) e.getKeyChar() != KeyEvent.VK_BACK_SPACE) {
+				JTerminal.this.keyPressed(e);
+			}
 		}
 	}
 	
