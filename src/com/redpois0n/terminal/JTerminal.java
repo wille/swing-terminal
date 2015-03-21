@@ -13,16 +13,18 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
-import com.redpois0n.oslib.OperatingSystem;
-
 @SuppressWarnings("serial")
 public class JTerminal extends JComponent {
 	
-	public static final Font DEFAULT_FONT = new Font(OperatingSystem.getOperatingSystem() == OperatingSystem.WINDOWS ? "Lucida Console" : "Arial", Font.PLAIN, 14);
+	public static final Font DEFAULT_FONT;
 	public static final Color DEFAULT_FOREGROUND = Color.white;
 	public static final Color DEFAULT_BACKGROUND = Color.black;
 	public static final char NULL_CHAR = '\u0000';
 
+	static {		
+		DEFAULT_FONT = new Font("Lucida Console", Font.PLAIN, 14);
+	}
+	
 	private List<InputListener> inputListeners = new ArrayList<InputListener>();
 	private List<SizeChangeListener> sizeChangeListeners = new ArrayList<SizeChangeListener>();
 	
@@ -50,6 +52,11 @@ public class JTerminal extends JComponent {
 	private boolean ctrl;
 	
 	private int block;
+	
+	private int selectX1;
+	private int selectY1;
+	private int selectX2;
+	private int selectY2;
 		
 	public JTerminal() {
 		this.repaintThread = new Thread(new RepaintRunnable());
@@ -158,7 +165,11 @@ public class JTerminal extends JComponent {
 				}
 				
 				g.setColor(foreground);
-				g.setFont(font);
+
+				if (font != null) {
+					g.setFont(font);
+				}
+				
 				g.drawString(Character.toString(c), rx, ry + charheight - 2);
 			}
 		}

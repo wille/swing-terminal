@@ -12,7 +12,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 
-import com.redpois0n.oslib.OperatingSystem;
+import com.redpois0n.oslib.Shell;
 
 public class DebugTerminal {
 	
@@ -100,14 +100,7 @@ public class DebugTerminal {
 	}
 	
 	public static void startShell() throws Exception {
-		String shell;
-		if (OperatingSystem.getOperatingSystem() == OperatingSystem.WINDOWS) {
-			shell = "cmd";
-		} else if (OperatingSystem.isBSD()) {		
-			shell = "/bin/tcsh";
-		} else {
-			shell = "/bin/bash";
-		}
+		String shell = Shell.getShell().getPath();
 		
 		ProcessBuilder builder = new ProcessBuilder(shell);
 		builder.redirectErrorStream(true);
