@@ -482,7 +482,7 @@ public class JTerminal extends JComponent {
 	public void keyPressed(KeyEvent e) {
 		char c = e.getKeyChar();
 		
-		if (ctrl && e.getKeyCode() == KeyEvent.VK_C) {
+		if (ctrl && (int) e.getKeyChar() == 3) {
 			for (InputListener l : inputListeners) {
 				l.onTerminate(this);
 			}

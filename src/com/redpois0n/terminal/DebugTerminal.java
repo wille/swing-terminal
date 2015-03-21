@@ -17,7 +17,8 @@ import com.redpois0n.oslib.Shell;
 public class DebugTerminal {
 	
 	private static Process p;
-
+	private static JTerminal terminal;
+	
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -25,7 +26,7 @@ public class DebugTerminal {
 			ex.printStackTrace();
 		}
 		
-		final JTerminal terminal = new JTerminal();
+		terminal = new JTerminal();
 
 		final JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(terminal);
@@ -52,7 +53,14 @@ public class DebugTerminal {
 			
 			@Override
 			public void onTerminate(JTerminal terminal) {
-			
+				try {
+					if (p != null) {
+						p.destroy();
+					}
+					startShell();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -78,33 +86,37 @@ public class DebugTerminal {
 		terminal.append("Debug and Example\n\n");
 		terminal.setBlockAtCurrentPos();
 		
-		new Thread(new Runnable() {
-			public void run() {
-				try {
-					while (true) {
-						startShell();
-						
-						BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-						
-						String line;
-						
-						while ((line = reader.readLine()) != null) {
-							terminal.append(line + "\n");
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}).start();
+		startShell();
 	}
 	
-	public static void startShell() throws Exception {
-		String shell = Shell.getShell().getPath();
-		
-		ProcessBuilder builder = new ProcessBuilder(shell);
-		builder.redirectErrorStream(true);
-		p = builder.start();
+	public static void startShell() {
+		try {
+			String shell = Shell.getShell().getPath();
+			
+			ProcessBuilder builder = new ProcessBuilder(shell);
+			builder.redirectErrorStream(true);
+			p = builder.start();
+			
+			new Thread(new Runnable() {
+				public void run() {
+					try {
+						while (true) {							
+							BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+							
+							String line;
+							
+							while ((line = reader.readLine()) != null) {
+								terminal.append(line + "\n");
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 	
 	public static void append(String command) {		
