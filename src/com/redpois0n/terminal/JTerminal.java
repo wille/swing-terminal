@@ -389,11 +389,6 @@ public class JTerminal extends JComponent {
 		} else {
 			moveRight();
 		}
-		
-		List<Character> tchars = new ArrayList<Character>();
-		for (int cc = 0; cc < chars.size(); cc++) {
-			tchars.add(chars.get(cc));
-		}
 				
 		chars.add(i, c);
 		foregrounds.add(i, foreground);
