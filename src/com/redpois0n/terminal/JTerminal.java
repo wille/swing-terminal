@@ -9,6 +9,7 @@ import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,11 +55,9 @@ public class JTerminal extends JComponent {
 	
 	private int block;
 	
-	private int selectX1;
-	private int selectY1;
-	private int selectX2;
-	private int selectY2;
-		
+	private int select1;
+	private int select2;
+	
 	public JTerminal() {
 		this.repaintThread = new Thread(new RepaintRunnable());
 		
@@ -70,6 +69,7 @@ public class JTerminal extends JComponent {
 		toggleBlink();
 		
 		super.addKeyListener(new KeyEventListener());
+		super.addMouseListener(new MouseEventListener());
 		
 		setSize();
 	}
@@ -141,7 +141,12 @@ public class JTerminal extends JComponent {
 				int rx = getRealX(y);
 				int ry = getRealY(x);	
 				
-				g.setColor(background);
+				if (i > select1 && i < select2) {
+					g.setColor(Color.white);
+				} else {
+					g.setColor(background);
+				}
+				
 				g.fillRect(rx, ry, charwidth, charheight);
 			}
 		}
@@ -165,7 +170,11 @@ public class JTerminal extends JComponent {
 					continue;
 				}
 				
-				g.setColor(foreground);
+				if (i > select1 && i < select2) {
+					g.setColor(Color.black);
+				} else {
+					g.setColor(foreground);
+				}
 
 				if (font != null) {
 					g.setFont(font);
@@ -514,7 +523,25 @@ public class JTerminal extends JComponent {
 	}
 	
 	public class MouseEventListener extends MouseAdapter {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			int x = e.getX() / charwidth;
+			int y = e.getY() / charheight;
+			
+			int i = x + y * columns;
+
+			select1 = i;
+		}
 		
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			int x = e.getX() / charwidth;
+			int y = e.getY() / charheight;
+			
+			int i = x + y * columns;
+
+			select2 = i;
+		}
 	}
 	
 	public void addInputListener(InputListener listener) {
