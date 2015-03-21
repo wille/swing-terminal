@@ -46,7 +46,7 @@ public class DebugTerminal {
 					terminal.clear();
 					return;
 				}
-				System.out.println(command);
+
 				append(command + "\n");
 				terminal.setBlockAtCurrentPos();
 			}
