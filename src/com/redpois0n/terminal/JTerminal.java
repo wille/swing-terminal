@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -398,8 +399,8 @@ public class JTerminal extends JComponent {
 		}
 		
 		List<Character> tchars = new ArrayList<Character>();
-		for (char cc : chars) {
-			tchars.add(cc);
+		for (int cc = 0; cc < chars.size(); cc++) {
+			tchars.add(chars.get(cc));
 		}
 		
 		chars.add(i, c);
@@ -521,6 +522,9 @@ public class JTerminal extends JComponent {
 		public void keyTyped(KeyEvent e) {		
 			JTerminal.this.keyPressed(e);
 		}
+	}
+	
+	public class MouseEventListener extends MouseAdapter {
 		
 	}
 	
