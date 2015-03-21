@@ -70,6 +70,7 @@ public class JTerminal extends JComponent {
 		
 		super.addKeyListener(new KeyEventListener());
 		super.addMouseListener(new MouseEventListener());
+		super.addMouseMotionListener(new MouseEventListener());
 		
 		setSize();
 	}
@@ -542,6 +543,17 @@ public class JTerminal extends JComponent {
 
 			select2 = i;
 		}
+		
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			int x = e.getX() / charwidth;
+			int y = e.getY() / charheight;
+			
+			int i = x + y * columns;
+
+			select2 = i;
+		}
+
 	}
 	
 	public void addInputListener(InputListener listener) {
