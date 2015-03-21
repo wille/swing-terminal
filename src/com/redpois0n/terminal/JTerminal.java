@@ -187,7 +187,12 @@ public class JTerminal extends JComponent {
 		
 		
 		if (blinking) {
-			g.setColor(Color.white);
+			int i = cursorx + cursory * columns;
+			if (i > select1 && i < select2) {
+				g.setColor(Color.black);
+			} else {
+				g.setColor(Color.white);
+			}
 			g.fillRect(getRealX(cursorx), getRealY(cursory), charwidth, charheight);
 		}
 		
