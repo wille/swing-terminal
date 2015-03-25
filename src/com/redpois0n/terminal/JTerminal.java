@@ -6,6 +6,9 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -86,7 +89,7 @@ public class JTerminal extends JComponent {
 		miCopy.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent paramActionEvent) {
-				System.out.println(getSelection());
+				setClipboard(getSelection());
 			}	
 		});
 		menu.add(miCopy);
@@ -702,6 +705,12 @@ public class JTerminal extends JComponent {
 		for (int i = 0; i < size; i++) {
 			list.add(t);
 		}
+	}
+	
+	private static void setClipboard(String s) {
+		StringSelection selection = new StringSelection(s);
+	    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+	    clipboard.setContents(selection, selection);
 	}
 	
 	/**
