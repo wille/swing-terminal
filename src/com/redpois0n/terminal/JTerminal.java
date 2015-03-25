@@ -86,7 +86,7 @@ public class JTerminal extends JComponent {
 		miCopy.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent paramActionEvent) {
-				
+				System.out.println(getSelection());
 			}	
 		});
 		menu.add(miCopy);
@@ -126,6 +126,30 @@ public class JTerminal extends JComponent {
 				menu.show(e.getComponent(), e.getX(), e.getY());
 			}
 		});
+	}
+	
+	/**
+	 * Gets currently marked text selection
+	 * @return
+	 */
+	public String getSelection() {
+		StringBuilder sb = new StringBuilder();
+		
+		boolean b = false;
+		
+		for (int i = select1; i < select2; i++) {
+			char c = chars.get(i);
+			
+			if (c == NULL_CHAR && b) {
+				b = false;
+				sb.append('\n');
+			} else if (c != NULL_CHAR) {
+				b = true;
+				sb.append(c);
+			}
+		}
+		
+		return sb.toString();
 	}
 	
 	/**
@@ -584,22 +608,26 @@ public class JTerminal extends JComponent {
 	public class MouseEventListener extends MouseAdapter {
 		@Override
 		public void mousePressed(MouseEvent e) {
-			int x = e.getX() / charwidth;
-			int y = e.getY() / charheight;
-			
-			int i = x + y * columns;
+			if (!e.isPopupTrigger()) {
+				int x = e.getX() / charwidth;
+				int y = e.getY() / charheight;
+				
+				int i = x + y * columns;
 
-			select1 = i;
+				select1 = i;
+			}
 		}
 		
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			int x = e.getX() / charwidth;
-			int y = e.getY() / charheight;
-			
-			int i = x + y * columns;
+			if (!e.isPopupTrigger()) {
+				int x = e.getX() / charwidth;
+				int y = e.getY() / charheight;
+				
+				int i = x + y * columns;
 
-			select2 = i;
+				select2 = i;
+			}
 		}
 		
 		@Override
