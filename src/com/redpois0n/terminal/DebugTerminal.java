@@ -66,11 +66,11 @@ public class DebugTerminal {
 
 		terminal.addSizeChangeListener(new SizeChangeListener() {
 			@Override
-			public void sizeChange(JTerminal terminal, int width, int height) {
+			public void sizeChange(JTerminal terminal, boolean reset, int width, int height) {
 				JScrollBar vertical = scrollPane.getVerticalScrollBar();
 				scrollPane.revalidate();
 				vertical.revalidate();
-				vertical.setValue(vertical.getMaximum());
+				vertical.setValue(reset ? 0 : vertical.getMaximum());
 				terminal.revalidate();
 			}
 		});

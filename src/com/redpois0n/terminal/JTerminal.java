@@ -181,7 +181,7 @@ public class JTerminal extends JComponent {
 		super.setPreferredSize(new Dimension(width, height));
 		
 		for (SizeChangeListener l : sizeChangeListeners) {
-			l.sizeChange(this, width, height);
+			l.sizeChange(this, shouldScrollUp, width, height);
 		}
 	}
 
