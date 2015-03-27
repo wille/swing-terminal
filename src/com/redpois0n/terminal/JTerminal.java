@@ -594,7 +594,6 @@ public class JTerminal extends JComponent {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			if (e.isPopupTrigger()) {
-				System.out.println("Show menu pressed, mousePressed");
 				showMenu(e);
 			} else {
 				int x = e.getX() / charwidth;
@@ -603,15 +602,12 @@ public class JTerminal extends JComponent {
 				int i = x + y * columns;
 
 				select1 = i;
-				System.out.println("Setting selected, mousePressed");
 			}
 		}
 		
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (e.isPopupTrigger()) {
-				System.out.println("Show menu released, mouseReleased");
-
 				showMenu(e);
 			} else if (!e.isPopupTrigger() && !menu.isVisible()) {
 				int x = e.getX() / charwidth;
@@ -620,7 +616,6 @@ public class JTerminal extends JComponent {
 				int i = x + y * columns;
 
 				select2 = i;
-				System.out.println("Setting selected, mouseReleased");
 			}
 		}
 		
