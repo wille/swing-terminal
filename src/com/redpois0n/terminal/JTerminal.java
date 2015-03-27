@@ -78,26 +78,6 @@ public class JTerminal extends JComponent {
 		toggleBlink();
 		
 		super.addKeyListener(new KeyEventListener());
-		super.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					System.out.println("Show menu pressed, mousePressed");
-					showMenu(e);
-				}
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					System.out.println("Show menu released, mouseReleased");
-
-					showMenu(e);
-				}
-			}
-
-			private void showMenu(MouseEvent e) {
-				menu.show(e.getComponent(), e.getX(), e.getY());
-			}
-		});
 		super.addMouseListener(new MouseEventListener());
 		super.addMouseMotionListener(new MouseEventListener());
 		
@@ -613,7 +593,10 @@ public class JTerminal extends JComponent {
 	public class MouseEventListener extends MouseAdapter {
 		@Override
 		public void mousePressed(MouseEvent e) {
-			if (!e.isPopupTrigger()) {
+			if (e.isPopupTrigger()) {
+				System.out.println("Show menu pressed, mousePressed");
+				showMenu(e);
+			} else {
 				int x = e.getX() / charwidth;
 				int y = e.getY() / charheight;
 				
@@ -626,7 +609,11 @@ public class JTerminal extends JComponent {
 		
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			if (!e.isPopupTrigger() && !menu.isVisible()) {
+			if (e.isPopupTrigger()) {
+				System.out.println("Show menu released, mouseReleased");
+
+				showMenu(e);
+			} else if (!e.isPopupTrigger() && !menu.isVisible()) {
 				int x = e.getX() / charwidth;
 				int y = e.getY() / charheight;
 				
@@ -646,7 +633,10 @@ public class JTerminal extends JComponent {
 
 			select2 = i;
 		}
-
+		
+		private void showMenu(MouseEvent e) {
+			menu.show(e.getComponent(), e.getX(), e.getY());
+		}
 	}
 	
 	public void addInputListener(InputListener listener) {
