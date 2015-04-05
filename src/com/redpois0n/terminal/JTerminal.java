@@ -111,6 +111,19 @@ public class JTerminal extends JComponent {
 			}	
 		});
 		menu.add(miPaste);
+		
+		addInputListener(new InputListener() {
+			@Override
+			public void processCommand(JTerminal terminal, String command) {
+				if (command.equalsIgnoreCase("clear") || command.equalsIgnoreCase("cls")) {
+					terminal.clear();
+					return;
+				}
+
+				append(command + "\n");
+				terminal.setBlockAtCurrentPos();
+			}
+		});
 	}
 	
 	/**
