@@ -116,11 +116,10 @@ public class JTerminal extends JComponent {
 			@Override
 			public void processCommand(JTerminal terminal, String command) {
 				if (command.equalsIgnoreCase("clear") || command.equalsIgnoreCase("cls")) {
-					terminal.clear();
-					return;
+					//terminal.clear();
+					//return;
 				}
 
-				append(command + "\n");
 				terminal.setBlockAtCurrentPos();
 			}
 		});

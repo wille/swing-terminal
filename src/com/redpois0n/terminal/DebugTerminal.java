@@ -42,7 +42,7 @@ public class DebugTerminal {
 		terminal.addInputListener(new InputListener() {
 			@Override
 			public void processCommand(JTerminal terminal, String command) {
-				
+				append(command + "\n");
 			}
 			
 			@Override
