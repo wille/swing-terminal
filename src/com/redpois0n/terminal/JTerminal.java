@@ -29,6 +29,9 @@ public class JTerminal extends JComponent {
 	public static final Color DEFAULT_FOREGROUND = Color.white;
 	public static final Color DEFAULT_BACKGROUND = Color.black;
 	public static final char NULL_CHAR = '\u0000';
+	
+	public static final char ESCAPE = 27;
+	public static final String UNIX_CLEAR = ESCAPE + "[H" + ESCAPE + "[J";
 
 	static {		
 		DEFAULT_FONT = new Font("Lucida Console", Font.PLAIN, 14);
