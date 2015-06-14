@@ -449,7 +449,12 @@ public class JTerminal extends JComponent {
 	 * @param background
 	 * @param font
 	 */
-	public void append(String s, Color foreground, Color background, Font font) {				
+	public void append(String s, Color foreground, Color background, Font font) {		
+		if (strip(s).equals(UNIX_CLEAR)) {
+			clear();
+			return;
+		}
+		
 		for (int i = 0; i < s.length(); i++) {
 			append(s.charAt(i), foreground, background, font);
 		}
@@ -465,6 +470,7 @@ public class JTerminal extends JComponent {
 	 * @param font
 	 */
 	public void insert(char c, int x, int y, Color foreground, Color background, Font font) {
+		System.out.println(c + ", " + (int) c);
 		if (Character.toString(c).equals(System.getProperty("line.separator")) || c == '\n') {
 			enter(false);
 			return;
@@ -713,6 +719,18 @@ public class JTerminal extends JComponent {
 		StringSelection selection = new StringSelection(s);
 	    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 	    clipboard.setContents(selection, selection);
+	}
+	
+	public static String strip(String s) {
+		while (s.startsWith("\n")) {
+			s = s.substring(1, s.length());
+		}
+		
+		while (s.endsWith("\n")) {
+			s = s.substring(0, s.length() - 1);
+		}
+		
+		return s;
 	}
 	
 	/**
