@@ -438,10 +438,8 @@ public class JTerminal extends JComponent {
 	 * Append string
 	 * @param s
 	 */
-	public void append(String s) {
-		for (int i = 0; i < s.length(); i++) {
-			append(s.charAt(i));
-		}
+	public void append(String s) {		
+		append(s, DEFAULT_FOREGROUND, DEFAULT_BACKGROUND, DEFAULT_FONT);
 	}
 	
 	/**
@@ -451,7 +449,7 @@ public class JTerminal extends JComponent {
 	 * @param background
 	 * @param font
 	 */
-	public void append(String s, Color foreground, Color background, Font font) {
+	public void append(String s, Color foreground, Color background, Font font) {				
 		for (int i = 0; i < s.length(); i++) {
 			append(s.charAt(i), foreground, background, font);
 		}
