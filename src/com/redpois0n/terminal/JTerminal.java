@@ -470,7 +470,6 @@ public class JTerminal extends JComponent {
 	 * @param font
 	 */
 	public void insert(char c, int x, int y, Color foreground, Color background, Font font) {
-		System.out.println(c + ", " + (int) c);
 		if (Character.toString(c).equals(System.getProperty("line.separator")) || c == '\n') {
 			enter(false);
 			return;
