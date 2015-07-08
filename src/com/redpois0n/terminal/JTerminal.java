@@ -420,7 +420,7 @@ public class JTerminal extends JComponent {
 	 * @param c
 	 */
 	public void append(char c) {
-		insert(c, cursorx, cursory, DEFAULT_FOREGROUND, DEFAULT_BACKGROUND, DEFAULT_FONT);
+		append(c, DEFAULT_FOREGROUND, DEFAULT_BACKGROUND, DEFAULT_FONT);
 	}
 	
 	/**
