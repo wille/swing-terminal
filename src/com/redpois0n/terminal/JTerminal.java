@@ -1,10 +1,11 @@
 package com.redpois0n.terminal;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -40,16 +41,10 @@ public class JTerminal extends JComponent {
 	private List<InputListener> inputListeners = new ArrayList<InputListener>();
 	private List<SizeChangeListener> sizeChangeListeners = new ArrayList<SizeChangeListener>();
 	
-	private List<Font> fonts;
-	private List<Color> foregrounds;
-	private List<Color> backgrounds;
-	private List<Character> chars;
+	private List<String> lines = new ArrayList<String>();
 	
 	private Thread repaintThread;
-	
-	private int columns;
-	private int rows;
-	
+
 	private int charwidth;
 	private int charheight;
 	
@@ -135,20 +130,6 @@ public class JTerminal extends JComponent {
 	public String getSelection() {
 		StringBuilder sb = new StringBuilder();
 		
-		boolean b = false;
-		
-		for (int i = select1; i < select2; i++) {
-			char c = chars.get(i);
-			
-			if (c == NULL_CHAR && b) {
-				b = false;
-				sb.append('\n');
-			} else if (c != NULL_CHAR) {
-				b = true;
-				sb.append(c);
-			}
-		}
-		
 		return sb.toString();
 	}
 	
@@ -156,18 +137,7 @@ public class JTerminal extends JComponent {
 	 * Resets whole terminal
 	 */
 	public void clear() {
-		this.columns = 80;
-		this.rows = 24;
-		
-		this.fonts = new ArrayList<Font>();
-		this.foregrounds = new ArrayList<Color>();
-		this.backgrounds = new ArrayList<Color>();
-		this.chars = new ArrayList<Character>();
-		
-		fill(chars, getTotal(), NULL_CHAR);
-		fill(backgrounds, getTotal(), DEFAULT_BACKGROUND);
-		fill(foregrounds, getTotal(), DEFAULT_FOREGROUND);
-		fill(fonts, getTotal(), DEFAULT_FONT);
+		this.lines.clear();
 		
 		this.cursorx = 0;
 		this.cursory = 0;
@@ -190,81 +160,83 @@ public class JTerminal extends JComponent {
 	 * Called when size changed, notifies change listeners and sets preferred size
 	 */
 	public void setSize() {
-		int width = getRealX(columns);
-		int height = getRealY(rows);
 		
-		super.setPreferredSize(new Dimension(width, height));
-		
-		for (SizeChangeListener l : sizeChangeListeners) {
-			l.sizeChange(this, shouldScrollUp, width, height);
-		}
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g.setColor(DEFAULT_BACKGROUND);
-		g.fillRect(0, 0, getRealX(columns), getRealY(rows));
-
-		for (int x = 0; x < rows; x++) {
-			for (int y = 0; y < columns; y++) {
-				int i = y + x * columns;
-				
-				if (i >= backgrounds.size()) {
+		g.fillRect(0, 0, getWidth(), getHeight());
+		
+		FontMetrics fm = g.getFontMetrics();
+		
+		int x = 0;
+		int y = 0;
+		
+		for (int i = 0; i < lines.size(); i++) {
+			String s = lines.get(i);
+			
+			List<String> ls = new ArrayList<String>();
+			
+			int td = s.length(); // to draw
+			
+			while (true) {
+				String t = null;
+				while (td > 0 && fm.stringWidth((t = s.substring(0, td--))) > getWidth());
+				if (td <= 0) {
 					break;
 				}
+				ls.add(t);
 				
-				Color background = backgrounds.get(i);
-
-				int rx = getRealX(y);
-				int ry = getRealY(x);	
-				
-				if (i > select1 && i < select2) {
-					g.setColor(Color.white);
-				} else {
-					g.setColor(background);
-				}
-				
-				g.fillRect(rx, ry, charwidth, charheight);
+				s = s.substring(0, td);
 			}
-		}
-		
-		for (int x = 0; x < rows; x++) {
-			for (int y = 0; y < columns; y++) {
-				int i = y + x * columns;
+			
+			Color foreground = Color.white;
+			Color background = Color.black;
+			
+			for (String line : ls) {
+				for (int cp = 0; cp < line.toCharArray().length; cp++) {
+					char c = line.charAt(cp);
+					
+					if (c == ESCAPE) {
+						char next = line.charAt(cp + 1);
 						
-				if (i >= foregrounds.size()) {
-					break;
-				}
-				
-				Color foreground = foregrounds.get(i);
-				char c = chars.get(i);
-				Font font = fonts.get(i);
-				
-				int rx = getRealX(y);
-				int ry = getRealY(x);	
-				
-				if (c == NULL_CHAR) {
-					continue;
-				}
-				
-				if (i > select1 && i < select2) {
-					g.setColor(Color.black);
-				} else {
+						if (next == '[') {
+							next = line.charAt(cp + 2);
+							char next2 = line.charAt(cp + 3);
+							
+							if (next == '0' && next2 == 'm') {
+								cp += 3;
+								continue;
+							} else {
+								cp += 4;
+								continue;
+							}
+						}
+					} else if (c == '\n') {
+						y += fm.getHeight();
+						continue;
+					}
+					
+					String charString = Character.toString(c);
+					
+					x += fm.stringWidth(charString);
+					
+					g.setColor(background);
+					g.fillRect(x, y, fm.stringWidth(charString), fm.getHeight());
+					
 					g.setColor(foreground);
-				}
-
-				if (font != null) {
-					g.setFont(font);
+					g.drawString(charString, x, y);
 				}
 				
-				g.drawString(Character.toString(c), rx, ry + charheight - 2);
+				x = 0;
+				y += fm.getHeight();
 			}
 		}
-		
 		
 		if (blinking) {
-			int i = cursorx + cursory * columns;
+			int i = cursorx + cursory;
 			if (i > select1 && i < select2) {
 				g.setColor(Color.black);
 			} else {
@@ -279,21 +251,7 @@ public class JTerminal extends JComponent {
 	 * Adds a row to bottom
 	 */
 	public void expand() {
-		int total = getTotal();
 		
-		this.rows++;
-		
-		for (int i = total; i <= getTotal(); i++) {
-			fonts.add(DEFAULT_FONT);
-			foregrounds.add(DEFAULT_FOREGROUND);
-			backgrounds.add(DEFAULT_BACKGROUND);
-			chars.add(NULL_CHAR);
-		}
-		
-		cursorx = 0;
-		cursory++;
-		
-		setSize();			
 	}
 	
 	/**
@@ -301,7 +259,7 @@ public class JTerminal extends JComponent {
 	 * @return
 	 */
 	public int getTotal() {
-		return columns + rows * columns;
+		return -1;
 	}
 	
 	/**
@@ -339,9 +297,9 @@ public class JTerminal extends JComponent {
 	 * Moves cursor up
 	 */
 	public void moveUp() {
-		if (cursory > 0 && cursorx + (cursory - 1) * columns >= block) {
-			cursory--;
-		}
+		//if (cursory > 0 && cursorx + (cursory - 1) * columns >= block) {
+		//	cursory--;
+		//}
 		
 		repaintThread.interrupt();
 	}
@@ -350,9 +308,9 @@ public class JTerminal extends JComponent {
 	 * Moves cursor down
 	 */
 	public void moveDown() {	
-		if (cursory + 1 < rows) {
-			cursory++;
-		}
+		//if (cursory + 1 < rows) {
+		//	cursory++;
+		//}
 		
 		repaintThread.interrupt();
 	}
@@ -361,9 +319,9 @@ public class JTerminal extends JComponent {
 	 * Moves cursor to the left
 	 */
 	public void moveLeft() {
-		if (cursorx - 1 >= 0 && cursorx - 1 + cursory * columns >= block) {
-			cursorx--;
-		}
+		//if (cursorx - 1 >= 0 && cursorx - 1 + cursory * columns >= block) {
+		//	cursorx--;
+		//}
 		
 		repaintThread.interrupt();
 	}
@@ -372,9 +330,9 @@ public class JTerminal extends JComponent {
 	 * Moves cursor to the right
 	 */
 	public void moveRight() {
-		if (cursorx + 1 < columns) {
-			cursorx++;
-		}
+		//if (cursorx + 1 < columns) {
+		//	cursorx++;
+		//}
 		
 		repaintThread.interrupt();
 	}
@@ -393,7 +351,7 @@ public class JTerminal extends JComponent {
 	 */
 	public void delete(int x, int y) {				
 		if (cursorx == 0 && cursory > 0) {
-			cursorx = columns - 1;
+			//cursorx = columns - 1;
 			cursory--;
 		} else if (cursorx == 0 && cursory == 0) {
 			return;
@@ -401,16 +359,13 @@ public class JTerminal extends JComponent {
 			moveLeft();
 		}
 		
-		int i = x + y * columns;
+		//int i = x + y * columns;
 		
-		if (i + 1 == block) {
-			return;
-		}
+		//if (i + 1 == block) {
+		//	return;
+		//}
 
-		fonts.remove(i);
-		foregrounds.remove(i);
-		backgrounds.remove(i);
-		chars.remove(i);
+		//this.lines.remove(i);
 		
 		repaintThread.interrupt();
 	}
@@ -431,7 +386,11 @@ public class JTerminal extends JComponent {
 	 * @param font
 	 */
 	public void append(char c, Color foreground, Color background, Font font) {
-		insert(c, cursorx, cursory, foreground, background, font);
+		Point p = getTypedEnd();
+		cursorx = p.x;
+		cursory = p.y;
+		String s = lines.get(lines.size() - 1);
+		s += c;
 	}
 	
 	/**
@@ -455,9 +414,7 @@ public class JTerminal extends JComponent {
 			return;
 		}
 		
-		for (int i = 0; i < s.length(); i++) {
-			append(s.charAt(i), foreground, background, font);
-		}
+		lines.add(s);
 	}
 	
 	/**
@@ -474,7 +431,8 @@ public class JTerminal extends JComponent {
 			enter(false);
 			return;
 		}
-		int i = x + y * columns;
+		
+		/*int i = x + y * columns;
 
 		if (x + 1 >= columns && y + 1 >= rows) {
 			expand();
@@ -488,7 +446,19 @@ public class JTerminal extends JComponent {
 		chars.add(i, c);
 		foregrounds.add(i, foreground);
 		backgrounds.add(i, background);
-		fonts.add(i, font);		
+		fonts.add(i, font);*/
+		
+		if (y < lines.size()) {
+			String temp = lines.get(y);
+			
+			String s1 = temp.substring(0, x);
+			String s2 = temp.substring(x, temp.length());
+			
+			lines.set(y, s1 + c + s2);
+		} else {
+			lines.add(lines.size(), Character.toString(c));
+		}
+	
 
 		repaintThread.interrupt();
 		shouldScroll = true;
@@ -498,22 +468,26 @@ public class JTerminal extends JComponent {
 	 * Get where current typed text ends
 	 * @return
 	 */
-	public int getTypedEnd() {				
-		for (int x = 0; x < rows; x++) {
-			for (int y = 0; y < columns; y++) {
-				int i = y + x * columns;
-				
-				if (chars.get(i) == NULL_CHAR) {
-					return i;
-				} 
-				
-				if (i < block) {
-					continue;
-				}	
-			}
+	public Point getTypedEnd() {
+		if (lines.size() == 0) {
+			return new Point(0, 0);
 		}
 		
-		return -1;
+		Point p = new Point();
+				
+		for (String s : lines) {
+			for (char c : s.toCharArray()) {
+				if (c == '\n') {
+					p.y++;
+				}
+			}
+			
+			p.y++;
+		}
+		
+		p.x = lines.get(lines.size() - 1).length();
+		
+		return p;
 	}
 	
 	/**
@@ -521,7 +495,7 @@ public class JTerminal extends JComponent {
 	 * @param press If enter actually is pressed or if just a new line should be added
 	 */
 	public void enter(boolean press) {
-		int latestBlock = block;
+		/*int latestBlock = block;
 		block = cursorx + cursory * columns;
 		
 		StringBuilder sb = new StringBuilder();
@@ -552,7 +526,7 @@ public class JTerminal extends JComponent {
 			for (InputListener l : inputListeners) {
 				l.processCommand(this, sb.toString().trim());
 			}
-		}
+		}*/
 	}
 	
 	/**
@@ -582,7 +556,7 @@ public class JTerminal extends JComponent {
 				moveDown();
 			} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 				moveLeft();
-			} else if (e.getKeyCode() == KeyEvent.VK_RIGHT && chars.get(cursorx + cursory * columns) != NULL_CHAR) {
+			} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {// && chars.get(cursorx + cursory * columns) != NULL_CHAR) {
 				moveRight();
 			} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 				delete();
@@ -617,9 +591,9 @@ public class JTerminal extends JComponent {
 				int x = e.getX() / charwidth;
 				int y = e.getY() / charheight;
 				
-				int i = x + y * columns;
+				//int i = x + y * columns;
 
-				select1 = i;
+				//select1 = i;
 			}
 		}
 		
@@ -631,9 +605,9 @@ public class JTerminal extends JComponent {
 				int x = e.getX() / charwidth;
 				int y = e.getY() / charheight;
 				
-				int i = x + y * columns;
+				//int i = x + y * columns;
 
-				select2 = i;
+				//select2 = i;
 			}
 		}
 		
@@ -642,9 +616,9 @@ public class JTerminal extends JComponent {
 			int x = e.getX() / charwidth;
 			int y = e.getY() / charheight;
 			
-			int i = x + y * columns;
+			//int i = x + y * columns;
 
-			select2 = i;
+			//select2 = i;
 		}
 		
 		private void showMenu(MouseEvent e) {
@@ -672,7 +646,7 @@ public class JTerminal extends JComponent {
 	 * Sets block at current position (good after user pressed enter and new line text has been appended)
 	 */
 	public void setBlockAtCurrentPos() {
-		this.block = cursorx + cursory * columns;
+		//this.block = cursorx + cursory * columns;
 	}
 
 	/**

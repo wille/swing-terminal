@@ -19,7 +19,7 @@ public class DebugTerminal {
 	private static Process p;
 	private static JTerminal terminal;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception ex) {
