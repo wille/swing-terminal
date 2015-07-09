@@ -38,6 +38,8 @@ public class JTerminal extends JTextPane {
 
 	static {		
 		DEFAULT_FONT = new Font("monospaced", Font.PLAIN, 14);
+		
+		// Default colors
 		COLORS.put("30", Color.black);
 		COLORS.put("31", Color.red.darker());
 		COLORS.put("32", Color.green.darker());
@@ -45,7 +47,19 @@ public class JTerminal extends JTextPane {
 		COLORS.put("34", Color.blue);
 		COLORS.put("35", Color.magenta.darker());
 		COLORS.put("36", Color.cyan.darker());
-		COLORS.put("37", Color.white);
+		COLORS.put("37", Color.lightGray);
+		COLORS.put("39", DEFAULT_FOREGROUND);
+		
+		// Bright colors
+		COLORS.put("90", Color.gray);
+		COLORS.put("91", Color.red);
+		COLORS.put("92", Color.green);
+		COLORS.put("93", Color.yellow);
+		COLORS.put("94", Color.blue.brighter());
+		COLORS.put("95", Color.magenta);
+		COLORS.put("96", Color.cyan);
+		COLORS.put("97", Color.white);
+
 	}
 	
 	public static Color getColor(String s) {
