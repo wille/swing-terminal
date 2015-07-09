@@ -172,7 +172,7 @@ public class JTerminal extends JComponent {
 		FontMetrics fm = g.getFontMetrics();
 		
 		int x = 0;
-		int y = 0;
+		int y = fm.getHeight();
 		
 		for (int i = 0; i < lines.size(); i++) {
 			String s = lines.get(i);
@@ -184,12 +184,19 @@ public class JTerminal extends JComponent {
 			while (true) {
 				String t = null;
 				while (td > 0 && fm.stringWidth((t = s.substring(0, td--))) > getWidth());
+				
 				if (td <= 0) {
 					break;
 				}
-				ls.add(t);
 				
-				s = s.substring(0, td);
+				s = s.substring(td, s.length());
+				td = s.length();
+								
+				if (s.length() == 0) {
+					break;
+				}
+				
+				ls.add(t);
 			}
 			
 			Color foreground = Color.white;
@@ -221,10 +228,10 @@ public class JTerminal extends JComponent {
 					
 					String charString = Character.toString(c);
 					
-					x += fm.stringWidth(charString);
+					x += fm.stringWidth(line) / line.length();
 					
 					g.setColor(background);
-					g.fillRect(x, y, fm.stringWidth(charString), fm.getHeight());
+					g.fillRect(x, y, fm.stringWidth(line) / line.length(), fm.getHeight());
 					
 					g.setColor(foreground);
 					g.drawString(charString, x, y);
