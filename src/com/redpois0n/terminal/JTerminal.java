@@ -27,6 +27,7 @@ public class JTerminal extends JTextPane {
 	
 	private List<InputListener> inputListeners = new ArrayList<InputListener>();
 	
+	private int last;
 	private StyledDocument doc;
 	
 	public JTerminal() {
@@ -70,8 +71,14 @@ public class JTerminal extends JTextPane {
 		//append(c);
 	}
 	
-	public synchronized void append(String s) {
+	public synchronized void append(String s) {		
 		setText(super.getText() + s);
+		last = doc.getLength();
+		setCursorInEnd();
+	}
+	
+	public void setCursorInEnd() {
+		setCaretPosition(doc.getLength());
 	}
 	
 	public class KeyEventListener implements KeyListener {
@@ -101,7 +108,14 @@ public class JTerminal extends JTextPane {
 	}
 	
 	public void enter() {
-		System.out.println("eeter");
+		String s = getText().substring(last, doc.getLength());
+		last = doc.getLength();
+		
+		for (InputListener l : inputListeners) {
+			l.processCommand(this, s);
+		}
+		
+		setCursorInEnd();
 	}
 	
 	public void addInputListener(InputListener listener) {
