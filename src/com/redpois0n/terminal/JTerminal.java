@@ -124,7 +124,7 @@ public class JTerminal extends JTextPane {
 		addKeyListener(new KeyEventListener());
 		addInputListener(new InputListener() {
 			@Override
-			public void processCommand(JTerminal terminal, String command) {
+			public void processCommand(JTerminal terminal, char c) {
 				
 			}
 		});
@@ -136,23 +136,6 @@ public class JTerminal extends JTextPane {
 	 */
 	public KeyListener getKeyListener() {
 		return super.getKeyListeners()[0];
-	}
-	
-	/**
-	 * Called when key pressed, checks if character is valid and checks for combinations such as Ctrl+C
-	 * @param e
-	 */
-	public void keyPressed(KeyEvent e) {
-		char c = e.getKeyChar();
-		
-		/*if (ctrl && (int) e.getKeyChar() == 3) {
-			for (InputListener l : inputListeners) {
-				l.onTerminate(this);
-			}
-			return;
-		}*/
-		
-		//append(c);
 	}
 	
 	public synchronized void append(String s) {
@@ -264,14 +247,22 @@ public class JTerminal extends JTextPane {
 		setCaretPosition(doc.getLength());
 	}
 	
+	/**
+	 * Called when key pressed, checks if character is valid and checks for combinations such as Ctrl+C
+	 * @param e
+	 */
+	public void keyPressed(char c) {		
+		for (InputListener l : inputListeners) {
+			l.processCommand(this, c);
+		}
+	}
+	
 	public class KeyEventListener implements KeyListener {
 
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				enter();
-			} else if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
-				//ctrl = true;
+				JTerminal.this.keyPressed('\n');
 			}
 		}
 
@@ -284,21 +275,8 @@ public class JTerminal extends JTextPane {
 
 		@Override
 		public void keyTyped(KeyEvent e) {		
-			if ((int) e.getKeyChar() != KeyEvent.VK_BACK_SPACE) {
-				JTerminal.this.keyPressed(e);
-			}
+			JTerminal.this.keyPressed(e.getKeyChar());
 		}
-	}
-	
-	public void enter() {
-		String s = getText().substring(last, doc.getLength());
-		last = doc.getLength();
-		
-		for (InputListener l : inputListeners) {
-			l.processCommand(this, s);
-		}
-		
-		setCursorInEnd();
 	}
 	
 	public void addInputListener(InputListener listener) {
