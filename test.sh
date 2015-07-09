@@ -1,0 +1,6 @@
+echo -e "\e[1mBold"
+echo -e "\e[2mDim"
+echo -e "\e[4mUnderlined"
+echo -e "\e[5mBlink"
+echo -e "\e[7mInverted"
+echo -e "\e[8mHidden"
