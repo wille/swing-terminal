@@ -60,6 +60,32 @@ public class JTerminal extends JTextPane {
 		COLORS.put("96", Color.cyan);
 		COLORS.put("97", Color.white);
 
+		// Background
+		
+		// Default colors
+		COLORS.put("40", Color.black);
+		COLORS.put("41", Color.red.darker());
+		COLORS.put("42", Color.green.darker());
+		COLORS.put("43", Color.yellow.darker());
+		COLORS.put("44", Color.blue);
+		COLORS.put("45", Color.magenta.darker());
+		COLORS.put("46", Color.cyan.darker());
+		COLORS.put("47", Color.lightGray);
+		COLORS.put("49", DEFAULT_FOREGROUND);
+
+		// Bright colors
+		COLORS.put("100", Color.gray);
+		COLORS.put("101", Color.red);
+		COLORS.put("102", Color.green);
+		COLORS.put("103", Color.yellow);
+		COLORS.put("104", Color.blue.brighter());
+		COLORS.put("105", Color.magenta);
+		COLORS.put("106", Color.cyan);
+		COLORS.put("107", Color.white);
+	}
+	
+	public static boolean isBackground(String s) {
+		return s.startsWith("4") || s.startsWith("10");
 	}
 	
 	public static Color getColor(String s) {
@@ -183,10 +209,18 @@ public class JTerminal extends JTextPane {
 						} else if (at.equals(UNDERLINED)) {
 							underline = !underline;
 						} else if (s1.length() > 0) {
-							if (fg) {
-								foreground = getColor(at);
+							Color color = getColor(at);
+							
+							if (isBackground(at)) {
+								background = color;
 							} else {
-								background = getColor(at);
+								foreground = color;
+							}
+							
+							if (!fg) { // inverted
+								Color temp = background;
+								background = foreground;
+								foreground = temp;
 							}
 							
 							if (dim) {
