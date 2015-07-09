@@ -30,14 +30,6 @@ public class DebugTerminal {
 
 		final JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(terminal);
-		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-		    public void adjustmentValueChanged(AdjustmentEvent e) {  
-		    	if (terminal.scrollToBottom()) {
-		    		boolean scrollUp = terminal.scrollUp();
-		    		e.getAdjustable().setValue(scrollUp ? 0 : e.getAdjustable().getMaximum());  
-		    	} 
-		    }
-		});
 
 		terminal.addInputListener(new InputListener() {
 			@Override
@@ -58,17 +50,6 @@ public class DebugTerminal {
 			}
 		});
 
-		terminal.addSizeChangeListener(new SizeChangeListener() {
-			@Override
-			public void sizeChange(JTerminal terminal, boolean reset, int width, int height) {
-				JScrollBar vertical = scrollPane.getVerticalScrollBar();
-				scrollPane.revalidate();
-				vertical.revalidate();
-				vertical.setValue(reset ? 0 : vertical.getMaximum());
-				terminal.revalidate();
-			}
-		});
-
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addKeyListener(terminal.getKeyListener());
@@ -76,9 +57,8 @@ public class DebugTerminal {
 		frame.setSize(675, 300);
 		frame.setVisible(true);
 
-		terminal.append("JTerminal Test\n", Color.white, Color.red, JTerminal.DEFAULT_FONT);
+		terminal.append("JTerminal Test\n");
 		terminal.append("Debug and Example\n\n");
-		terminal.setBlockAtCurrentPos();
 		
 		startShell();
 	}
