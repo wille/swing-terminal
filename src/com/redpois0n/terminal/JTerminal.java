@@ -19,6 +19,13 @@ import javax.swing.text.StyledDocument;
 @SuppressWarnings("serial")
 public class JTerminal extends JTextPane {
 	
+	public static final String RESET = "0";
+	public static final String BOLD = "1";
+	public static final String DIM = "2";
+	public static final String UNDERLINED = "4";
+	public static final String INVERTED = "7";
+	public static final String HIDDEN = "8";
+
 	public static final Font DEFAULT_FONT;
 	public static final Color DEFAULT_FOREGROUND = Color.white;
 	public static final Color DEFAULT_BACKGROUND = Color.black;
@@ -111,8 +118,12 @@ public class JTerminal extends JTextPane {
 	public synchronized void append(String s) {
         last = doc.getLength();
 
+        boolean fg = true;
 		Color foreground = DEFAULT_FOREGROUND;
 		Color background = DEFAULT_BACKGROUND;
+		boolean bold = false;
+		boolean underline = false;
+		boolean dim = false;
 		
 		String s1 = "";
 		
@@ -120,7 +131,7 @@ public class JTerminal extends JTextPane {
             char c = s.charAt(cp);
             
             if (c == ESCAPE) {
-            	append(foreground, s1);
+            	append(s1, foreground, background, bold, underline);
                 char next = s.charAt(cp + 1);
                 
                 if (next == '[') {
@@ -129,15 +140,37 @@ public class JTerminal extends JTextPane {
                 	while ((c = s.charAt(++cp)) != 'm') {
                 		s1 += c;
                 	}
-                	s1 += 'm';
-                    
-                    if (s1.equals("0m") || s1.equals("m")) {                        
-                        foreground = DEFAULT_FOREGROUND;
-                    } else if (s1.length() > 0) {
-                        System.out.println(s1);
-                        
-                        foreground = getColor(s1);
-                    }
+                	
+                	String[] attributes = s1.split(";");
+
+					for (String at : attributes) {
+						if (at.equals(RESET) || s1.length() == 0) {
+							foreground = DEFAULT_FOREGROUND;
+							background = DEFAULT_BACKGROUND;
+							fg = true;
+							underline = false;
+							dim = false;
+							bold = false;
+						} else if (at.equals(BOLD)) {
+							bold = !bold;
+						} else if (at.equals(DIM)) {
+							dim = !dim;
+						} else if (at.equals(INVERTED)) {
+							fg = !fg;
+						} else if (at.equals(UNDERLINED)) {
+							underline = !underline;
+						} else if (s1.length() > 0) {
+							if (fg) {
+								foreground = getColor(at);
+							} else {
+								background = getColor(at);
+							}
+							
+							if (dim) {
+								foreground = foreground.brighter();
+							}
+						}
+					}
                     
                     s1 = "";
                     continue;
@@ -148,7 +181,7 @@ public class JTerminal extends JTextPane {
         }
         
         if (s1.length() > 0) {
-        	append(foreground, s1);
+        	append(s1, foreground, background, bold, underline);
         }
         
         last = doc.getLength();
@@ -157,13 +190,16 @@ public class JTerminal extends JTextPane {
         
 	}
 	
-	 public void append(Color foreground, String s) { 
+	 public void append(String s, Color fg, Color bg, boolean bold, boolean underline) { 
 		StyleContext sc = StyleContext.getDefaultStyleContext();
-		AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, foreground);
 
 		setCursorInEnd();
 		
-		setCharacterAttributes(aset, false);
+		setCharacterAttributes(sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, fg), false);
+		setCharacterAttributes(sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Background, bg), false);
+		setCharacterAttributes(sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Bold, bold), false);
+		setCharacterAttributes(sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Underline, underline), false);
+
 		replaceSelection(s);
 	}
 	
