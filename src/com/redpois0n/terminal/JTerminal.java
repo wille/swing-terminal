@@ -157,6 +157,15 @@ public class JTerminal extends JTextPane {
 							dim = !dim;
 						} else if (at.equals(INVERTED)) {
 							fg = !fg;
+							if (fg) {
+								Color temp = foreground;
+								foreground = background;
+								background = temp;
+							} else {
+								Color temp = background;
+								background = foreground;
+								foreground = temp;
+							}
 						} else if (at.equals(UNDERLINED)) {
 							underline = !underline;
 						} else if (s1.length() > 0) {
