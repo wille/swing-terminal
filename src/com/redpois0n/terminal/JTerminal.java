@@ -183,7 +183,7 @@ public class JTerminal extends JComponent {
 			
 			while (true) {
 				String t = null;
-				while (td > 0 && fm.stringWidth((t = s.substring(0, td--))) > getWidth());
+				while (td > 0 && fm.stringWidth((t = s.substring(0, --td))) > getWidth());
 				
 				if (td <= 0) {
 					break;
