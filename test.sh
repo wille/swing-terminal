@@ -7,7 +7,7 @@ echo -e "\e[8mHidden"
 
 echo "Foreground colors"
 
-echo -e "\e[310mDefault"
+echo -e "\e[39mDefault"
 echo -e "\e[30mBlack"
 echo -e "\e[31mRed"
 echo -e "\e[32mGreen"
@@ -27,7 +27,7 @@ echo -e "\e[97mWhite"
 
 echo "Background colors"
 
-echo -e "\e[410mDefault"
+echo -e "\e[49mDefault"
 echo -e "\e[40mBlack"
 echo -e "\e[41mRed"
 echo -e "\e[42mGreen"
