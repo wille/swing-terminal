@@ -44,12 +44,19 @@ public class JTerminal extends JTextPane {
 	public static Color getColor(String s) {
 		 Color color = DEFAULT_FOREGROUND;
 		 
+		 boolean bright = s.contains("1;");
+		 s = s.replace("1;", "");
+		 
 		 if (s.endsWith("m")) {
 			 s = s.substring(0, s.length() - 1);
 		 }
 		 
 		 if (COLORS.containsKey(s)) {
 			 color = COLORS.get(s);
+		 }
+		 
+		 if (bright) {
+			 color = color.brighter();
 		 }
 	
 		 return color;
